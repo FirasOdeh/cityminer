@@ -8,7 +8,6 @@ Class DefaultController extends CI_Controller {
 
         // Load Template
         $this->load->library('template');
-
         $this->load->library("Aauth");
 
     }
@@ -16,6 +15,9 @@ Class DefaultController extends CI_Controller {
     // Show index page
     public function index() {
         if($this->aauth->is_loggedin()){
+
+            $file1 = file_get_contents('./data/BarcelonaVerticesCoordinates.json');
+            var_dump($file1);
             $this->template->load('default', 'dashboard', null);
 
         }else{
@@ -27,6 +29,7 @@ Class DefaultController extends CI_Controller {
     }
 
     public function dashboard() {
+
         $this->template->load('default', 'dashboard', null);
     }
 
