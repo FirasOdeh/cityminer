@@ -1,0 +1,11 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^project/(.*)/builder/assets/(.*)$
+RewriteCond %{REQUEST_URI} !^project/(.*)/builder/core/(.*)$
+RewriteCond %{REQUEST_URI} !^project/(.*)/builder/uploads/(.*)$
+RewriteCond %{REQUEST_URI} !^project/(.*)/builder/(.*)$
+RewriteCond %{REQUEST_URI} !^project/(.*)/(.*)$
+RewriteRule ^(.*)$ index.php/$1 [L]
+</IfModule>
