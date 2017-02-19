@@ -148,3 +148,9 @@ input:-webkit-autofill {
 .pix_border_box { border: 2px solid #f4f4f4;padding: 20px; }
 
 .pix_page_tabs { box-shadow: 0 -2px 0 0 #eee inset; }
+
+
+
+
+.dashboard_options { margin-bottom:0px;padding-top:5px;vertical-align: middle;padding-bottom: 5px; }
+.dashboard_options .row {  margin-bottom:0px;vertical-align: middle }

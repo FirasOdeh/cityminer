@@ -17,7 +17,7 @@
 <body>
 
 
-<nav>
+<nav id="site_nav">
     <div class="nav-wrapper  z-depth-0">
         <div class="container">
             <a href="<?php echo base_url() ?>" class="brand-logo page-logo">
@@ -29,7 +29,13 @@
                 <?php if (isset($not_logged)) { ?>
                     <li><a href="<?php echo base_url() ?>login">Login</a></li>
                 <?php }else{ ?>
-                    <li><a class="dropdown-button" href="#!" data-activates="dropdown1" data-beloworigin="true">Firas<i class="material-icons right">arrow_drop_down</i></a></li>
+                    <li><a class="dropdown-button" href="#!" data-activates="dropdown1" data-beloworigin="true">Firas<i class="material-icons right">arrow_drop_down</i></a>
+                        <ul id="dropdown1" class="dropdown-content">
+                            <li><a href="#!">Settings</a></li>
+                            <li class="divider"></li>
+                            <li><a href="<?php echo base_url() ?>logout">Logout</a></li>
+                        </ul>
+                    </li>
                 <?php } ?>
             </ul>
             <ul class="side-nav" id="mobile-demo">
@@ -42,11 +48,7 @@
     </div>
 </nav>
 
-<ul id="dropdown1" class="dropdown-content">
-    <li><a href="#!">Settings</a></li>
-    <li class="divider"></li>
-    <li><a href="<?php echo base_url() ?>logout">Logout</a></li>
-</ul>
+
 
 <?php echo $body; ?>
 
@@ -55,5 +57,10 @@
 <!--<script type="text/javascript" src="--><?php //echo base_url(); ?><!--js/material.min.js"></script>-->
 <script type="text/javascript" src="<?php echo base_url(); ?>js/materialize.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/custom.js"></script>
+
+<script src="js/leaflet.js"></script>
+<script src="data/BarcelonaVerticesCoordinates.json"></script>
+<script src="js/citymap.js"></script>
+
 </body>
 </html>
