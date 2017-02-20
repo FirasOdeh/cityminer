@@ -29,6 +29,14 @@ Class DataController extends CI_Controller {
 
     }
 
+    public function express() {
+        header('Content-Type: application/json');
+        $city = $_GET["city"];
+        $response = $this->DataModel->algoExpress($city);
+        echo $response;
+
+
+    }
 }
 
 ?>
