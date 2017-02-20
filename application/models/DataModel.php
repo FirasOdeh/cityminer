@@ -10,7 +10,7 @@ class DataModel extends CI_Model {
 
     public function getCityAreas($city)
     {
-        $response = file_get_contents('./data/'.$city.'VerticesCoordinates.json');
+        $response = file_get_contents('./data/cities/'.$city.'/'.'FoursquareVerticesCoordinates.json');
         return $response;
     }
 

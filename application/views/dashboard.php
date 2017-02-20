@@ -13,7 +13,12 @@
             <div class="input-field col s12 m4">
                 <select id="city">
                     <option value="" disabled selected>Choose a City</option>
-                    <option value="Barcelona">Barcelona</option>
+                    <option value="barcelona">Barcelona</option>
+                    <option value="paris">Paris</option>
+                    <option value="whashington">Whashington</option>
+                    <option value="new_york">New York</option>
+                    <option value="los_angeles">Los Angeles</option>
+                    <option value="san_francisco">San Francisco</option>
                 </select>
                 <label>City</label>
             </div>

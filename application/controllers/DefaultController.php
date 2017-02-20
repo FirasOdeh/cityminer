@@ -15,8 +15,6 @@ Class DefaultController extends CI_Controller {
     // Show index page
     public function index() {
         if($this->aauth->is_loggedin()){
-
-            $file1 = file_get_contents('./data/BarcelonaVerticesCoordinates.json');
             $this->template->load('default', 'dashboard', null);
 
         }else{
