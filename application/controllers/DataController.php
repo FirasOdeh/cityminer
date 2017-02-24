@@ -20,14 +20,6 @@ Class DataController extends CI_Controller {
     }
 
     // Show index page
-    public function index() {
-        header('Content-Type: application/json');
-        $city = $_GET["city"];
-        $response = $this->DataModel->getCityAreas($city);
-        echo $response;
-
-    }
-
     public function areas() {
         header('Content-Type: application/json');
         $city = $_GET["city"];
@@ -35,6 +27,10 @@ Class DataController extends CI_Controller {
         echo $response;
     }
 
+    public function execute(){
+        // TODO
+
+    }
 }
 
 ?>

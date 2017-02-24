@@ -30,6 +30,11 @@ Class DefaultController extends CI_Controller {
         $this->template->load('default', 'dashboard', null);
     }
 
+    public function admin() {
+        $data['username'] = "toto";
+        $this->template->load('default', 'admin', $data);
+    }
+
 
 
 }
