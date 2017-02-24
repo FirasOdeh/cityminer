@@ -30,8 +30,8 @@
                 <label>Algorithm</label>
             </div>
             <div class="input-field col s12 m1">
-                <input placeholder="Placeholder" id="segma" type="text" class="validate" value="1">
-                <label for="segma">Segma</label>
+                <input placeholder="Placeholder" id="sigma" type="text" class="validate" value="1">
+                <label for="sigma">Sigma</label>
             </div>
             <div class="input-field col s12 m1">
                 <input placeholder="Placeholder" id="delta" type="text" class="validate" value="0.005">

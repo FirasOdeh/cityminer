@@ -26,4 +26,15 @@ class DataModel extends CI_Model {
         return $response;
     }
 
+    public function executeExpress($city, $sigma, $delta, $time)
+    {
+        copy('./data/cities/'.$city.'/'.'FoursquareGraph.json' , "./data/algorithms/express/FoursquareGraph.json");
+        chdir("data/algorithms/express/");
+        exec("java -jar express.jar FoursquareGraph.json " . $delta . " " . $sigma . " " . $time ,$k ,$j );
+        $response = file_get_contents("retrievedPatternsFile.json");
+        unlink("retrievedPatternsFile.json");
+        unlink("resultIndicatorFile.txt");
+        unlink("FoursquareGraph.json");
+        return $response;
+    }
 }

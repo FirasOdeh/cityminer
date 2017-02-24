@@ -28,8 +28,18 @@ Class DataController extends CI_Controller {
     }
 
     public function execute(){
-        // TODO
+        header('Content-Type: application/json');
+        $city = $_GET["city"];
+        $sigma = $_GET["sigma"];
+        $delta = $_GET["delta"];
+        $algorithm = $_GET["algo"];
+        if($algorithm == "express"){
+            $time = $_GET["time"];
+            $response = $this->DataModel->executeExpress($city, $sigma, $delta, $time);
+        } else{
 
+        }
+        echo $response;
     }
 
     public function express() {

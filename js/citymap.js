@@ -87,7 +87,7 @@ $('button#submitButton').click( function() {
         data: {
             "city": $('#city').val(),
             "algo": $('#algo').val(),
-            "segma": $('#segma').val(),
+            "sigma": $('#sigma').val(),
             "delta": $('#delta').val(),
             "time": $('#time').val(),
             "mincov": $('#mincov').val()
