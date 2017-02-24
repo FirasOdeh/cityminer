@@ -154,3 +154,5 @@ input:-webkit-autofill {
 
 .dashboard_options { margin-bottom:0px;padding-top:5px;vertical-align: middle;padding-bottom: 5px; }
 .dashboard_options .row {  margin-bottom:0px;vertical-align: middle }
+
+.option_hide { display: none; }

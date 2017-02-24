@@ -25,7 +25,10 @@ Class DataController extends CI_Controller {
         $city = $_GET["city"];
         $response = $this->DataModel->getCityAreas($city);
         echo $response;
+    }
 
+    public function execute(){
+        // TODO
 
     }
 

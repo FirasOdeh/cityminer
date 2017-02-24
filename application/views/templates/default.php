@@ -1,3 +1,4 @@
+<?php header('Access-Control-Allow-Origin: *'); ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -31,7 +32,7 @@
                 <?php }else{ ?>
                     <li><a class="dropdown-button" href="#!" data-activates="dropdown1" data-beloworigin="true">Firas<i class="material-icons right">arrow_drop_down</i></a>
                         <ul id="dropdown1" class="dropdown-content">
-                            <li><a href="#!">Settings</a></li>
+                            <li><a href="admin">Admin</a></li>
                             <li class="divider"></li>
                             <li><a href="<?php echo base_url() ?>logout">Logout</a></li>
                         </ul>
@@ -59,7 +60,6 @@
 <script type="text/javascript" src="<?php echo base_url(); ?>js/custom.js"></script>
 
 <script src="js/leaflet.js"></script>
-<script src="data/BarcelonaVerticesCoordinates.json"></script>
 <script src="js/citymap.js"></script>
 
 </body>

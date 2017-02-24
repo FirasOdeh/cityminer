@@ -1,18 +1,19 @@
 <html>
 <head>
-    <title>Login Form</title>
+    <title>CityMiner</title>
 </head>
 <body>
 
 <div class="container">
-    <div class="col-md-12 col-xs-12">
-        <!-- Main component for a primary marketing message or call to action -->
-        <div class="mdl-card mdl-shadow--2dp small-padding">
-            <h1>Test</h1>
-            <p>This example is a quick exercise to illustrate how the default, static navbar and fixed to top navbar work. It includes the responsive CSS and HTML, so it also adapts to your viewport and device.</p>
-            <p>
-                <a class="btn btn-lg btn-primary" href="#navbar" role="button">View navbar docs &raquo;</a>
-            </p>
+    <div class="col s12 m12">
+        <br><br>
+        <div class="card">
+            <div class="card-content">
+                <h1>Homepage</h1>
+                <p>Avec l’avènement des médias sociaux et des données ouvertes, il est important d’analyser ces données afin de décrire finement l’activité d’une ville (i.e., politique publique, SHS, …). Dans ce contexte, un algorithme CityMiner a été développé. S’appuyant sur une modélisation des données sous forme de graphes attribués, il permet de découvrir des zones urbaines exceptionnelles (i.e., des zones dont la concentration de certains attributs diffèrent du reste de la ville).</p>
+                <br>
+                <a class="waves-effect waves-light btn" href="login" role="button">Login</a>
+            </div>
         </div>
     </div>
 
