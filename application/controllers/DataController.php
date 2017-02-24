@@ -20,7 +20,7 @@ Class DataController extends CI_Controller {
     }
 
     // Show index page
-    public function index() {
+    public function areas() {
         header('Content-Type: application/json');
         $city = $_GET["city"];
         $response = $this->DataModel->getCityAreas($city);

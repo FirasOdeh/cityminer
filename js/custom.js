@@ -24,9 +24,7 @@ jQuery(document).ready(function($){
             "language": "en",
             "key": "AIzaSyAw_GK4ObIHDD2Es59Qa70vVW-8H8LvMNQ"
         },
-        xhrFields:{
-          withCredentials: true
-        },
+        crossDomain:true,
         cache: false,
         type: "GET",
         success: function (response) {
