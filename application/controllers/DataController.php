@@ -26,7 +26,13 @@ Class DataController extends CI_Controller {
         $response = $this->DataModel->getCityAreas($city);
         echo $response;
 
+    }
 
+    public function areas() {
+        header('Content-Type: application/json');
+        $city = $_GET["city"];
+        $response = $this->DataModel->getCityAreas($city);
+        echo $response;
     }
 
 }
