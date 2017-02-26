@@ -58,6 +58,9 @@
 <!--<script type="text/javascript" src="--><?php //echo base_url(); ?><!--js/material.min.js"></script>-->
 <script type="text/javascript" src="<?php echo base_url(); ?>js/materialize.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/custom.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>js/admin.js"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBE6ia5uKlMLjvUfh7hZwtAODnw_wreQ_M"></script>
+
 
 <script src="js/leaflet.js"></script>
 <script src="js/citymap.js"></script>
