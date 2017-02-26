@@ -37,7 +37,8 @@ Class DataController extends CI_Controller {
             $time = $_GET["time"];
             $response = $this->DataModel->executeExpress($city, $sigma, $delta, $time);
         } else{
-
+            $minCov = $_GET["mincov"];
+            $response = $this->DataModel->executeEnergetics($city, $sigma, $delta, $minCov);
         }
         echo $response;
     }

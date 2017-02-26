@@ -37,4 +37,16 @@ class DataModel extends CI_Model {
         unlink("FoursquareGraph.json");
         return $response;
     }
+
+    public function executeEnergetics($city, $sigma, $delta, $minCov)
+    {
+        copy('./data/cities/'.$city.'/'.'FoursquareGraph.json' , "./data/algorithms/energetics/FoursquareGraph.json");
+        chdir("data/algorithms/energetics/");
+        exec("java -jar energetics.jar FoursquareGraph.json " . $delta . " " . $sigma . " " . $minCov ,$k ,$j );
+        $response = file_get_contents("retrievedPatternsFile.json");
+        unlink("retrievedPatternsFile.json");
+        unlink("resultIndicatorFile.txt");
+        unlink("FoursquareGraph.json");
+        return $response;
+    }
 }
