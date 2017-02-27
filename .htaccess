@@ -9,3 +9,7 @@ RewriteCond %{REQUEST_URI} !^project/(.*)/builder/(.*)$
 RewriteCond %{REQUEST_URI} !^project/(.*)/(.*)$
 RewriteRule ^(.*)$ index.php/$1 [L]
 </IfModule>
+
+<IfModule mod_headers.c>
+Header set Access-Control-Allow-Origin "*"
+</IfModule>
