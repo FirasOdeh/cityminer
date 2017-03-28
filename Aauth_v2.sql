@@ -176,3 +176,12 @@ CREATE TABLE IF NOT EXISTS `aauth_login_attempts` (
 -- ----------------------------
 -- Records of aauth_login_attempts
 -- ----------------------------
+
+
+CREATE TABLE IF NOT EXISTS `aauth_login_attempts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ip_address` varchar(39) DEFAULT '0',
+  `timestamp` datetime DEFAULT NULL,
+  `login_attempts` tinyint(2) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

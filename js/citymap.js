@@ -1,5 +1,5 @@
-//var mymap = L.map('mainmap').setView([45.754, 4.842], 13);
-var mymap = L.map('mainmap').setView([51.505, -0.09], 13);
+var mymap = L.map('mainmap').setView([45.754, 4.842], 13);
+//var mymap = L.map('mainmap').setView([51.505, -0.09], 13);
 
 attribution = mymap.attributionControl;
 
@@ -24,6 +24,7 @@ var city_data = {};
 //mymap.on('click', onMapClick);
 
 jQuery(document).ready(function($){
+    $('.modal').modal();
 
     var win_h = $(window).height();
     var nav_h = $('#site_nav').height();
@@ -86,16 +87,24 @@ jQuery(document).ready(function($){
             Materialize.toast('Please select a City!', 4000); // 4000 is the duration of the toast
         }
     });
+
+
+
 });
+
 
 $('button#submitButton').click( function() {
 
     if($('#city').val()) {
+        $('#map_loading').show();
         clearMap();
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
             maxZoom: 18,
             id: 'mapbox.streets'
         }).addTo(mymap);
+        $('.option_panel').css('right','-365px');
+
+        var att_arr = {};
         $.ajax({
             url: "controller/execute",
             data: {
@@ -109,10 +118,19 @@ $('button#submitButton').click( function() {
             cache: false,
             type: "GET",
             success: function (response) {
-                $.each(response.patterns, function (key, value) {
-                    var rand_color = getRandomColor();
 
+
+                // var sorted_patterns = response.patterns.sort(function(a, b) {
+                //     return parseFloat(b.characteristic.score) - parseFloat(a.characteristic.score);
+                // });
+
+                var result_patterns = response.patterns;
+                var global_zone = new L.LayerGroup();
+                $.each(result_patterns, function (key, value) {
+                    var rand_color = getRandomColor();
+                    var poly;
                     var zone = new L.LayerGroup();
+                    //var temp_zone = new L.LayerGroup();
                     $.each(value.subgraph, function (k, area) {
                         var points = [];
                         $.each(city_data[area], function (key1, point) {
@@ -121,31 +139,140 @@ $('button#submitButton').click( function() {
                             p.push(point.lng);
                             points.push(p);
                         });
-                        L.polygon(points, {
-                            color: rand_color,
-                            fillColor: rand_color,
-                            weight: 2,
-                            fillOpacity: 0.2
-                        }).on('click', function(e) {
-                            popup
-                                .setLatLng(e.latlng)
-                                .setContent("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes)
-                                .openOn(mymap);
-                        }).addTo(zone);
-                    });
-                    var zoneUnion = L.geoJson(unify(zone.getLayers()), {
-                        color: rand_color,
-                        fillColor: rand_color,
-                        weight: 1,
-                        fillOpacity: 0.5
-                    }).on('click', function(e) {
-                        popup
-                            .setLatLng(e.latlng)
-                            .setContent("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes)
-                            .openOn(mymap);
-                    }).addTo(mymap);
+                        poly = L.polygon(points).addTo(zone);
 
+                        //poly.addTo(temp_zone);
+                    });
+                    $.each(value.characteristic.positiveAttributes, function (k, att) {
+                        if(att_arr[att]){
+                            att_arr[att]++;
+                        }else{
+                            att_arr[att] = 1;
+                        }
+                    });
+                    // if(key==0){
+                    //     global_zone = temp_zone;
+                    // }
+                    // var intersection = turf.intersect(unify(global_zone.getLayers()), unify(zone.getLayers()));
+                    // //console.log(intersection);
+                    //
+                    // if(intersection==undefined) {
+                    //     console.log(intersection);
+                    //     global_zone = L.geoJson(turf.union(global_zone.getLayers(), temp_zone.getLayers()));
+                    //
+                    //
+                    //     //L.geoJson(unify(global_zone.getLayers())).addTo(mymap);
+                    // }
+
+
+                    value['zone'] = unify(zone.getLayers());
+                    // var zoneUnion = L.geoJson(unify(zone.getLayers()), {
+                    //     color: rand_color,
+                    //     fillColor: rand_color,
+                    //     weight: 1,
+                    //     fillOpacity: 0.5
+                    // }).on('click', function (e) {
+                    //     popup
+                    //         .setLatLng(e.latlng)
+                    //         .setContent("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes)
+                    //         .openOn(mymap);
+                    // }).addTo(mymap);
                 });
+
+                // Sort the attributes by occurrence
+                var att_arr2= [];
+                $.each(att_arr, function (key, value) {
+                    att_arr2.push({name: key, val: att_arr[key]});
+                });
+                var res = att_arr2.sort(function(a, b) {
+                    return parseFloat(b.val) - parseFloat(a.val);
+                });
+
+
+
+
+                // Create Attributes sidebar list
+                $('#and_Attributes_form, #or_Attributes_form').html('');
+                $.each(res, function (key, value) {
+                    $('#and_Attributes_form').append('<p class="checkbox">'+
+                        '<input type="checkbox" name="'+value.name+'" id="and_'+value.name+'" />'+
+                        '<label for="and_'+value.name+'">'+value.name+' ('+value.val+')</label>'+
+                        '</p>');
+                    $('#or_Attributes_form').append('<p>'+
+                        '<input type="checkbox" name="'+value.name+'" id="or_'+value.name+'" />'+
+                        '<label for="or_'+value.name+'">'+value.name+' ('+value.val+')</label>'+
+                        '</p>');
+                });
+                $('#map_loading').hide();
+                $('.option_panel').css('right','20px');
+
+
+                $('#and_Attributes_form input').change(function() {
+                    var pAttributes = [];
+                    $.each($('#and_Attributes_form').serializeArray(), function (i, field) {
+                        pAttributes.push(field.name);
+                    });
+                    setTimeout(function() {
+                        clearMap();
+                        var rand_color = getRandomColor();
+                        if(pAttributes.length>0){
+                            $.each(result_patterns, function (key, value) {
+                                //if(!eq_arrays(pAttributes,value.characteristic.positiveAttributes)){return true;}
+                                if(!pAttributes.containsAll(value.characteristic.positiveAttributes)){return true;}
+                                var zone = new L.LayerGroup();
+                                L.geoJson(value['zone'], {
+                                    color: rand_color,
+                                    fillColor: rand_color,
+                                    weight: 1,
+                                    fillOpacity: 0.3
+                                }).on('click', function (e) {
+                                    $('#stats_content').html("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes);
+
+                                    $('#modal1').modal('open');
+                                    $('#modal_tabs').tabs('select_tab', 'stats');
+
+                                    // popup
+                                    //     .setLatLng(e.latlng)
+                                    //     .setContent("Positive Attributes for this Zone: " + pAttributes)
+                                    //     .openOn(mymap);
+                                }).addTo(mymap);
+                            });
+                        }
+                    }, 0);
+                });
+
+                $('#or_Attributes_form input').change(function() {
+                    var pAttributes = [];
+                    $.each($('#or_Attributes_form').serializeArray(), function (i, field) {
+                        pAttributes.push(field.name);
+                    });
+                    setTimeout(function() {
+                        clearMap();
+                        var rand_color = getRandomColor();
+                        $.each(result_patterns, function (key, value) {
+
+                            if(!value.characteristic.positiveAttributes.containsAny(pAttributes)){return true;}
+                            var zone = new L.LayerGroup();
+                            L.geoJson(value['zone'], {
+                                color: rand_color,
+                                fillColor: rand_color,
+                                weight: 1,
+                                fillOpacity: 0.3
+                            }).on('click', function (e) {
+                                $('#stats_content').html("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes);
+                                $('#modal1').modal('open');
+                                $('#modal_tabs').tabs('select_tab', 'stats');
+                                // popup
+                                //     .setLatLng(e.latlng)
+                                //     .setContent("Positive Attributes for this Zone: " + pAttributes)
+                                //     .openOn(mymap);
+                            }).addTo(mymap);
+                        });
+                    }, 0);
+                });
+
+
+                //L.geoJson(unify(global_zone.getLayers())).addTo(mymap);
 
             },
             error: function (xhr) {
@@ -156,6 +283,24 @@ $('button#submitButton').click( function() {
         Materialize.toast('Please select a City!', 4000); // 4000 is the duration of the toast
     }
 });
+
+
+
+function eq_arrays(arr1, arr2){
+    return  $(arr1).not(arr2).length === 0 && $(arr2).not(arr1).length === 0;
+}
+
+Array.prototype.containsAll = function(arr) {
+    return this.every(function (v) {
+        return arr.indexOf(v) >= 0
+    })
+};
+
+Array.prototype.containsAny = function(arr) {
+    return this.some(function (v) {
+        return arr.indexOf(v) >= 0
+    })
+};
 
 function clearMap() {
     for(i in mymap._layers) {

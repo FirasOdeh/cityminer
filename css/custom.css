@@ -10,7 +10,7 @@ input:-webkit-autofill {
 }
 
 .pix-page-title { font-weight: 300;padding: 10px 0; }
-.page-logo { font-weight: 300 !important; }
+a.page-logo { font-weight: 100 !important; }
 
 #pix_temp { width: 0px;height: 0px;opacity: 0; }
 
@@ -156,3 +156,18 @@ input:-webkit-autofill {
 .dashboard_options .row {  margin-bottom:0px;vertical-align: middle }
 
 .option_hide { display: none; }
+
+.option_panel {
+	position: fixed;
+	z-index: 9999999;
+	display: inline-block;
+	width: 340px;
+	right: -365px;
+	top: 200px;
+	-webkit-transition:all .4s ease;
+	-moz-transition:all .4s ease;
+	-ms-transition:all .4s ease;
+	-o-transition:all .4s ease;
+}
+.loading_div {display: inline-block;margin-top: 15px;display: none }
+.map_modal { padding: 0px !important;margin: 0px !important;}

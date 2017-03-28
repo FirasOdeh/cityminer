@@ -12,7 +12,7 @@
     <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>css/materialize.css">
 
     <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>css/custom.css">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500" rel="stylesheet">
 
 </head>
 <body>
