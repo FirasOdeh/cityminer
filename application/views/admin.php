@@ -19,7 +19,7 @@
                     <div id="Export" class="col s12">
                         <h5><strong>Add city</strong></h5>
                         <div>
-                            <div class="input-field col s4">
+                            <div class="input-field col s3">
                                 <select>
                                     <option value="foursquare" selected>Foursquare</option>
                                     <option value="google">Google</option>
@@ -27,7 +27,7 @@
                                 <label>Source</label>
                             </div>
 
-                            <div class="col s8">
+                            <div class="col s5">
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <i class="material-icons prefix">location_on</i>
@@ -36,8 +36,19 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="input-field col s2">
+                                <input type="text" id="scope_input" value="5">
+                                <label>Scope (Km)</label>
+
+                            </div>
+                            <div class="input-field col s2">
+                                <button type="submit" id="import_btn" class="waves-effect waves-light btn"> Import </button>
+                            </div>
                         </div>
-                        <br><br><br><br>
+                        <div id="adminmap" style="width: 100%; height: 75vh;"></div>
+                        <br><br>
+                        <br><br>
                         <table>
                             <thead>
                             <tr>
@@ -48,27 +59,17 @@
                             </thead>
 
                             <tbody>
-                            <tr>
-                                <td>Paris</td>
-                                <td>200</td>
-                                <td><a class="btn-floating waves-effect grey lighten-3 tooltipped" data-position="left" data-delay="0" data-tooltip="Remove City" id="del_'.$pk->id.'">
-                                        <i class="material-icons grey-text darken-3-text ">delete</i>
-                                    </a></td>
-                            </tr>
-                            <tr>
-                                <td>Paris</td>
-                                <td>200</td>
-                                <td><a class="btn-floating waves-effect grey lighten-3 tooltipped" data-position="left" data-delay="0" data-tooltip="Remove City" id="del_'.$pk->id.'">
-                                        <i class="material-icons grey-text darken-3-text ">delete</i>
-                                    </a></td>
-                            </tr>
-                            <tr>
-                                <td>Paris</td>
-                                <td>200</td>
-                                <td><a class="btn-floating waves-effect grey lighten-3 tooltipped" data-position="left" data-delay="0" data-tooltip="Remove City" id="del_'.$pk->id.'">
-                                        <i class="material-icons grey-text darken-3-text ">delete</i>
-                                    </a></td>
-                            </tr>
+                            <?php
+                                foreach ($cities as $city){?>
+                                    <tr>
+                                        <td><?php echo $city->name ?></td>
+                                        <td><?php echo $city->places_number ?></td>
+                                        <td><a class="btn-floating waves-effect grey lighten-3 " data-position="left" data-delay="0" id="del_'.$pk->id.'">
+                                                <i class="material-icons grey-text darken-3-text delete-city-btn" data-city_id="<?php echo $city->id ?>">delete</i>
+                                            </a></td>
+                                    </tr>
+                                <?php }
+                            ?>
 
                             </tbody>
                         </table>
@@ -119,5 +120,7 @@
     </div>
 </div> <!-- /container -->
 
+
 </body>
+<script type="text/javascript" src="<?php echo base_url(); ?>js/admin.js"></script>
 </html>

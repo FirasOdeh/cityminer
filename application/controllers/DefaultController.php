@@ -9,6 +9,7 @@ Class DefaultController extends CI_Controller {
         // Load Template
         $this->load->library('template');
         $this->load->library("Aauth");
+        $this->load->Model('AdminModel');
 
     }
 
@@ -32,6 +33,7 @@ Class DefaultController extends CI_Controller {
 
     public function admin() {
         $data['username'] = "toto";
+        $data['cities'] = $this->AdminModel->getAllCities();
         $this->template->load('default', 'admin', $data);
     }
 
