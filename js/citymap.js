@@ -92,7 +92,7 @@ jQuery(document).ready(function($){
 
 });
 
-
+var ctx = document.getElementById("canvas").getContext("2d");
 $('button#submitButton').click( function() {
 
     if($('#city').val()) {
@@ -231,6 +231,60 @@ $('button#submitButton').click( function() {
                                     $('#modal1').modal('open');
                                     $('#modal_tabs').tabs('select_tab', 'stats');
 
+                                    if(window.myBar){
+                                        window.myBar = window.myBar.clear();
+                                        window.myBar.destroy();
+                                    }
+                                    var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                                    var color = Chart.helpers.color;
+                                    var barChartData = {
+                                        labels: ["Test", "February", "March", "April", "May", "June", "July"],
+                                        datasets: [{
+                                            label: 'Zone',
+                                            backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                                            borderColor: window.chartColors.red,
+                                            borderWidth: 1,
+                                            data: [
+                                                randomScalingFactor(),
+                                                randomScalingFactor(),
+                                                randomScalingFactor(),
+                                                randomScalingFactor(),
+                                                randomScalingFactor(),
+                                                randomScalingFactor(),
+                                                randomScalingFactor()
+                                            ]
+                                        }, {
+                                            label: 'City',
+                                            backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+                                            borderColor: window.chartColors.blue,
+                                            borderWidth: 1,
+                                            data: [
+                                                randomScalingFactor(),
+                                                randomScalingFactor(),
+                                                randomScalingFactor(),
+                                                randomScalingFactor(),
+                                                randomScalingFactor(),
+                                                randomScalingFactor(),
+                                                randomScalingFactor()
+                                            ]
+                                        }]
+
+                                    };
+
+                                    window.myBar = new Chart(ctx, {
+                                        type: 'bar',
+                                        data: barChartData,
+                                        options: {
+                                            responsive: true,
+                                            legend: {
+                                                position: 'top',
+                                            },
+                                            title: {
+                                                display: true,
+                                                text: 'Zone Attributes Statistics'
+                                            }
+                                        }
+                                    });
                                     // popup
                                     //     .setLatLng(e.latlng)
                                     //     .setContent("Positive Attributes for this Zone: " + pAttributes)
@@ -262,6 +316,64 @@ $('button#submitButton').click( function() {
                                 $('#stats_content').html("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes);
                                 $('#modal1').modal('open');
                                 $('#modal_tabs').tabs('select_tab', 'stats');
+
+                                console.log(value.characteristic.positiveAttributes);
+                                if(window.myBar){
+                                    window.myBar = window.myBar.clear();
+                                    window.myBar.destroy();
+
+                                }
+
+                                var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                                var color = Chart.helpers.color;
+                                var barChartData = {
+                                    labels: ["Test", "February", "March", "April", "May", "June", "July"],
+                                    datasets: [{
+                                        label: 'Zone',
+                                        backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                                        borderColor: window.chartColors.red,
+                                        borderWidth: 1,
+                                        data: [
+                                            randomScalingFactor(),
+                                            randomScalingFactor(),
+                                            randomScalingFactor(),
+                                            randomScalingFactor(),
+                                            randomScalingFactor(),
+                                            randomScalingFactor(),
+                                            randomScalingFactor()
+                                        ]
+                                    }, {
+                                        label: 'City',
+                                        backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+                                        borderColor: window.chartColors.blue,
+                                        borderWidth: 1,
+                                        data: [
+                                            randomScalingFactor(),
+                                            randomScalingFactor(),
+                                            randomScalingFactor(),
+                                            randomScalingFactor(),
+                                            randomScalingFactor(),
+                                            randomScalingFactor(),
+                                            randomScalingFactor()
+                                        ]
+                                    }]
+
+                                };
+
+                                window.myBar = new Chart(ctx, {
+                                    type: 'bar',
+                                    data: barChartData,
+                                    options: {
+                                        responsive: true,
+                                        legend: {
+                                            position: 'top',
+                                        },
+                                        title: {
+                                            display: true,
+                                            text: 'Zone Attributes Statistics'
+                                        }
+                                    }
+                                });
                                 // popup
                                 //     .setLatLng(e.latlng)
                                 //     .setContent("Positive Attributes for this Zone: " + pAttributes)

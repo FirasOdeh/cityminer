@@ -156,10 +156,10 @@ a.page-logo { font-weight: 100 !important; }
 .dashboard_options .row {  margin-bottom:0px;vertical-align: middle }
 
 .option_hide { display: none; }
-
+.modal { min-height: 80%; }
 .option_panel {
 	position: fixed;
-	z-index: 9999999;
+	z-index: 999;
 	display: inline-block;
 	width: 340px;
 	right: -365px;

@@ -135,21 +135,38 @@
 <!-- Modal Structure -->
 <div id="modal1" class="modal modal-fixed-footer">
     <div class="modal-content map_modal">
-        <ul class="tabs tabs-fixed-width" id="modal_tabs">
+        <ul class="tabs" id="modal_tabs">
             <li class="tab"><a class="active waves-effect waves-blue" href="#stats">Statistics</a></li>
             <li class="tab"><a class="waves-effect waves-blue" href="#search_tab">Search a similar Place in another City</a></li>
         </ul>
-        <div id="stats">
-            <div class="row">
-                <div class="col s12">
-                    <p id="stats_content">A bunch of text</p>
+        <div>
+            <div id="stats">
+                <div class="row">
+                    <div class="col s12">
+                        <p id="stats_content">A bunch of text</p>
+                        <div id="container" style="width: 100%;">
+                            <canvas id="canvas" style="width: 100%;"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div id="search_tab">
-            <div class="row">
-                <div class="col s12">
-                    <p id="">A bunch of text</p>
+            <div id="search_tab">
+                <div class="row">
+                    <div class="col s12">
+                        <p id="">A bunch of text</p>
+                        <div class="input-field col s12 m4">
+                            <select id="city">
+                                <option value="" disabled selected>Choose a City</option>
+                                <option value="barcelona">Barcelona</option>
+                                <option value="paris">Paris</option>
+                                <option value="whashington">Whashington</option>
+                                <option value="new_york">New York</option>
+                                <option value="los_angeles">Los Angeles</option>
+                                <option value="san_francisco">San Francisco</option>
+                            </select>
+                            <label>City</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -159,6 +176,11 @@
         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Close</a>
     </div>
 </div>
+
+
+<script src="<?php echo base_url(); ?>js/Chart.bundle.js"></script>
+<script src="<?php echo base_url(); ?>js/utils.js"></script>
+
 
 
 </body>
