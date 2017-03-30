@@ -51,18 +51,6 @@ class DataModel extends CI_Model {
         return $response;
     }
 
-    public function importCityPlacesFoursquare($city, $country)
-    {
-        $v = "v=20161016";
-        $client_id = "client_id=E03NT2KLEKZACDFNQBSI435V2WMKW3OXAYA2U4DYDBWSWOIB";
-        $client_secret = "client_secret=RZJ2FNKEMC4BF5BSBQZCLY4OL1MGIDR1U4XOONRCZCQX022W";
-        $url = "https://api.foursquare.com/v2/venues/search?&ll=45,4&radius=20000&limit=15000&$v&$client_id&$client_secret";
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $response = json_decode(curl_exec($ch));
-        return count($response->response->venues);
-    }
 
     public function importCityPlacesGoogle($city, $country)
     {
@@ -87,6 +75,7 @@ class DataModel extends CI_Model {
         $attributes = $graph->descriptorsMetaData[0]->attributesName;
         $result = new StdClass();
         $result->attributes = new StdClass();
+        $result->sums = new StdClass();
         foreach ($graph->vertices as $vertex){
             if(in_array($vertex->vertexId, $zone)){
                 for ($i=0 ; $i<count($attributes); $i++ ){
@@ -98,6 +87,14 @@ class DataModel extends CI_Model {
                 }
 
             }
+            for ($i=0 ; $i<count($attributes); $i++ ){
+                if(property_exists($result->sums, $attributes[$i])){
+                    $result->sums->{$attributes[$i]} += $vertex->descriptorsValues[0][$i];
+                } else {
+                    $result->sums->{$attributes[$i]} = $vertex->descriptorsValues[0][$i];
+                }
+            }
+
         }
         return $result;
     }
