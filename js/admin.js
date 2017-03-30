@@ -34,6 +34,7 @@ jQuery(document).ready(function($){
                 if(component.types[j] == "locality"){
                     city = component.long_name;
                 }
+
                 lat = place.geometry.location.lat();
                 lng = place.geometry.location.lng();
 
