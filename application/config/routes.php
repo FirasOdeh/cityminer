@@ -54,6 +54,7 @@ $route['login'] = 'UserAuthentication/login';
 $route['register'] = 'UserAuthentication/register';
 $route['logout'] = 'UserAuthentication/logout';
 $route['controller/(:any)'] = 'DataController/$1';
+$route['admin/(:any)'] = 'AdminController/$1';
 $route['(:any)'] = 'DefaultController/$1';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

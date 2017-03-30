@@ -51,6 +51,20 @@ Class DataController extends CI_Controller {
 
 
     }
+    public function import() {
+        //header('Content-Type: application/json');
+        $city = $_GET["city"];
+        $country = $_GET["country"];
+        $response = $this->DataModel->importCityPlacesGoogle($city, $country);
+        echo $response;
+
+    }
+    public function statistics() {
+        //get city and the array of vertex
+        header('Content-Type: application/json');
+        $response = $this->DataModel->camputeStatistics("paris", array("V(0,0)", "V(0,1)"));
+        echo json_encode($response);
+    }
 }
 
 ?>

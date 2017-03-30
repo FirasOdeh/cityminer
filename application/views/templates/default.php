@@ -51,16 +51,15 @@
 
 
 
-<?php echo $body; ?>
+
 
 <script type="text/javascript" src="<?php echo base_url(); ?>js/jquery-1.11.2.js"></script>
 <!--<script type="text/javascript" src="--><?php //echo base_url(); ?><!--js/bootstrap.js"></script>-->
 <!--<script type="text/javascript" src="--><?php //echo base_url(); ?><!--js/material.min.js"></script>-->
 <script type="text/javascript" src="<?php echo base_url(); ?>js/materialize.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/custom.js"></script>
-<script type="text/javascript" src="<?php echo base_url(); ?>js/admin.js"></script>
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBE6ia5uKlMLjvUfh7hZwtAODnw_wreQ_M"></script>
-
+<?php echo $body; ?>
 
 <script src="js/leaflet.js"></script>
 <script src="js/turf.min.js"></script>

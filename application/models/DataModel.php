@@ -8,6 +8,7 @@
  */
 class DataModel extends CI_Model {
 
+
     public function getCityAreas($city)
     {
         $response = file_get_contents('./data/cities/'.$city.'/'.'FoursquareVerticesCoordinates.json');
@@ -48,5 +49,56 @@ class DataModel extends CI_Model {
         unlink("resultIndicatorFile.txt");
         unlink("FoursquareGraph.json");
         return $response;
+    }
+
+    public function importCityPlacesFoursquare($city, $country)
+    {
+        $v = "v=20161016";
+        $client_id = "client_id=E03NT2KLEKZACDFNQBSI435V2WMKW3OXAYA2U4DYDBWSWOIB";
+        $client_secret = "client_secret=RZJ2FNKEMC4BF5BSBQZCLY4OL1MGIDR1U4XOONRCZCQX022W";
+        $url = "https://api.foursquare.com/v2/venues/search?&ll=45,4&radius=20000&limit=15000&$v&$client_id&$client_secret";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $response = json_decode(curl_exec($ch));
+        return count($response->response->venues);
+    }
+
+    public function importCityPlacesGoogle($city, $country)
+    {
+        $key = "key=AIzaSyBE6ia5uKlMLjvUfh7hZwtAODnw_wreQ_M";
+
+        $url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=45.750000,4.850000&radius=50000&$key";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $response = json_decode(curl_exec($ch));
+        return count($response->results);
+    }
+
+    public function camputeStatistics($city, $zone)
+    {
+        $graph = file_get_contents('./data/cities/'.$city.'/'.'FoursquareGraph.json');
+        $graph = preg_replace('/("(.*?)"|(\w+))(\s*:\s*(".*?"|.))/s', '"$2$3"$4', $graph);
+        $search = array(' ', "\t", "\n", "\r");
+        $graph = str_replace($search, '', $graph);
+        $graph = preg_replace("/,}/", '}', $graph);
+        $graph = json_decode($graph);
+        $attributes = $graph->descriptorsMetaData[0]->attributesName;
+        $result = new StdClass();
+        $result->attributes = new StdClass();
+        foreach ($graph->vertices as $vertex){
+            if(in_array($vertex->vertexId, $zone)){
+                for ($i=0 ; $i<count($attributes); $i++ ){
+                    if(property_exists($result->attributes, $attributes[$i])){
+                        $result->attributes->{$attributes[$i]} += $vertex->descriptorsValues[0][$i];
+                    } else {
+                        $result->attributes->{$attributes[$i]} = $vertex->descriptorsValues[0][$i];
+                    }
+                }
+
+            }
+        }
+        return $result;
     }
 }
