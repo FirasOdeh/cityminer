@@ -228,6 +228,7 @@ $('button#submitButton').click( function() {
                                 }).on('click', function (e) {
                                     $('#stats_content').html("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes);
 
+
                                     $('#modal1').modal('open');
                                     $('#modal_tabs').tabs('select_tab', 'stats');
 
@@ -313,67 +314,85 @@ $('button#submitButton').click( function() {
                                 weight: 1,
                                 fillOpacity: 0.3
                             }).on('click', function (e) {
+                                console.log(value);
                                 $('#stats_content').html("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes);
                                 $('#modal1').modal('open');
                                 $('#modal_tabs').tabs('select_tab', 'stats');
-
-                                console.log(value.characteristic.positiveAttributes);
+                                //console.log(value.characteristic.positiveAttributes);
                                 if(window.myBar){
                                     window.myBar = window.myBar.clear();
                                     window.myBar.destroy();
 
                                 }
+                                // console.log($('#city').val());
+                                // console.log(value.subgraph);
+                                $.ajax({
+                                    url: "controller/statistics",
+                                    data: {
+                                        "city": $('#city').val(),
+                                        "zone": value.subgraph,
+                                    },
+                                    cache: false,
+                                    type: "GET",
+                                    success: function (response) {
+                                        console.log(response);
+                                        var labels = [];
+                                        var attrs_vals = [];
+                                        var sum_vals = [];
+                                        $.each(response.attributes, function (k, v) {
+                                            labels.push(k);
+                                            attrs_vals.push(v);
+                                        });
+                                        $.each(response.sums, function (k, v) {
+                                            sum_vals.push(v);
+                                        });
 
-                                var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                                var color = Chart.helpers.color;
-                                var barChartData = {
-                                    labels: ["Test", "February", "March", "April", "May", "June", "July"],
-                                    datasets: [{
-                                        label: 'Zone',
-                                        backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-                                        borderColor: window.chartColors.red,
-                                        borderWidth: 1,
-                                        data: [
-                                            randomScalingFactor(),
-                                            randomScalingFactor(),
-                                            randomScalingFactor(),
-                                            randomScalingFactor(),
-                                            randomScalingFactor(),
-                                            randomScalingFactor(),
-                                            randomScalingFactor()
-                                        ]
-                                    }, {
-                                        label: 'City',
-                                        backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
-                                        borderColor: window.chartColors.blue,
-                                        borderWidth: 1,
-                                        data: [
-                                            randomScalingFactor(),
-                                            randomScalingFactor(),
-                                            randomScalingFactor(),
-                                            randomScalingFactor(),
-                                            randomScalingFactor(),
-                                            randomScalingFactor(),
-                                            randomScalingFactor()
-                                        ]
-                                    }]
+                                        var color = Chart.helpers.color;
+                                        var barChartData = {
+                                            //labels: ["Test", "February", "March", "April", "May", "June", "July"],
+                                            labels: labels,
+                                            datasets: [{
+                                                label: 'Zone',
+                                                backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                                                borderColor: window.chartColors.red,
+                                                borderWidth: 1,
+                                                data: attrs_vals
+                                            }, {
+                                                label: 'City',
+                                                backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+                                                borderColor: window.chartColors.blue,
+                                                borderWidth: 1,
+                                                data: sum_vals
+                                            }]
 
-                                };
+                                        };
 
-                                window.myBar = new Chart(ctx, {
-                                    type: 'bar',
-                                    data: barChartData,
-                                    options: {
-                                        responsive: true,
-                                        legend: {
-                                            position: 'top',
-                                        },
-                                        title: {
-                                            display: true,
-                                            text: 'Zone Attributes Statistics'
-                                        }
+                                        window.myBar = new Chart(ctx, {
+                                            type: 'bar',
+                                            data: barChartData,
+                                            options: {
+                                                responsive: true,
+                                                legend: {
+                                                    position: 'top',
+                                                },
+                                                title: {
+                                                    display: true,
+                                                    text: 'Zone Attributes Statistics'
+                                                }
+                                            }
+                                        });
+
+                                        // console.log(labels);
+                                        // console.log(response);
+                                    },
+                                    error: function (xhr) {
+
                                     }
                                 });
+
+
+
+
                                 // popup
                                 //     .setLatLng(e.latlng)
                                 //     .setContent("Positive Attributes for this Zone: " + pAttributes)
