@@ -171,3 +171,24 @@ a.page-logo { font-weight: 100 !important; }
 }
 .loading_div {display: inline-block;margin-top: 15px;display: none }
 .map_modal { padding: 0px !important;margin: 0px !important;}
+
+.left_option_panel {
+	position: fixed;
+	z-index: 999;
+	display: inline-block;
+	width: 340px;
+	left: -365px;
+	top: 235px;
+	-webkit-transition:all .4s ease;
+	-moz-transition:all .4s ease;
+	-ms-transition:all .4s ease;
+	-o-transition:all .4s ease;
+}
+.left_option_panel .card-content {
+	max-height: 350px;
+	overflow: auto;
+}
+
+.left_option_panel .card-title {
+	padding: 2px 15px;
+}

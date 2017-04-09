@@ -99,36 +99,62 @@
 <div id="mainmap" style="width: 100%; height: 85vh;"></div>
 
 <div class="col m4 s4 option_panel">
-<div class="card">
+    <div class="card">
 
-    <div class="card-tabs">
-        <ul class="tabs tabs-fixed-width">
-            <li class="tab"><a class="active waves-effect waves-blue" href="#or_Attributes">OR</a></li>
-            <li class="tab"><a class="waves-effect waves-blue" href="#and_Attributes">AND</a></li>
-        </ul>
-    </div>
-    <div class="card-content grey lighten-4">
-        <div id="and_Attributes">
-            <form id="and_Attributes_form">
-            <p>
-                <input type="checkbox" id="test6" />
-                <label for="test6">Yellow</label>
-            </p>
-            <p>
-                <input type="checkbox" id="test7" />
-                <label for="test7">Yellow</label>
-            </p>
-            <p>
-                <input type="checkbox" id="test8" />
-                <label for="test8">Yellow</label>
-            </p>
-            </form>
+        <div class="card-tabs">
+            <ul class="tabs tabs-fixed-width">
+                <li class="tab"><a class="waves-effect waves-blue" href="#or_Attributes">OR</a></li>
+                <li class="tab"><a class="active waves-effect waves-blue" href="#and_Attributes">AND</a></li>
+            </ul>
         </div>
-        <div id="or_Attributes">
-            <form id="or_Attributes_form"></form>
+        <div class="card-content grey lighten-4">
+            <div id="and_Attributes">
+                <form id="and_Attributes_form">
+                    <p>
+                        <input type="checkbox" id="test6" />
+                        <label for="test6">Yellow</label>
+                    </p>
+                    <p>
+                        <input type="checkbox" id="test7" />
+                        <label for="test7">Yellow</label>
+                    </p>
+                    <p>
+                        <input type="checkbox" id="test8" />
+                        <label for="test8">Yellow</label>
+                    </p>
+                </form>
+            </div>
+            <div id="or_Attributes">
+                <form id="or_Attributes_form"></form>
+            </div>
         </div>
     </div>
 </div>
+
+<div class="col m4 s4 left_option_panel">
+    <div class="card">
+
+        <span class="card-title">Zones</span>
+
+        <div class="card-content grey lighten-4">
+            <div id="and_Attributes2">
+                <form id="zones_form">
+                    <p>
+                        <input type="checkbox" id="test6" />
+                        <label for="test6">Yellow</label>
+                    </p>
+                    <p>
+                        <input type="checkbox" id="test7" />
+                        <label for="test7">Yellow</label>
+                    </p>
+                    <p>
+                        <input type="checkbox" id="test8" />
+                        <label for="test8">Yellow</label>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -153,7 +179,6 @@
             <div id="search_tab">
                 <div class="row">
                     <div class="col s12">
-                        <p id="">A bunch of text</p>
                         <div class="input-field col s12 m4">
                             <select id="city">
                                 <option value="" disabled selected>Choose a City</option>

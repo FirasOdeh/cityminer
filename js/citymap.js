@@ -26,6 +26,8 @@ var city_data = {};
 jQuery(document).ready(function($){
     $('.modal').modal();
 
+
+
     var win_h = $(window).height();
     var nav_h = $('#site_nav').height();
     var options_h = $('#site_options').height();
@@ -118,12 +120,9 @@ $('button#submitButton').click( function() {
             cache: false,
             type: "GET",
             success: function (response) {
-
-
                 // var sorted_patterns = response.patterns.sort(function(a, b) {
                 //     return parseFloat(b.characteristic.score) - parseFloat(a.characteristic.score);
                 // });
-
                 var result_patterns = response.patterns;
                 var global_zone = new L.LayerGroup();
                 $.each(result_patterns, function (key, value) {
@@ -189,8 +188,6 @@ $('button#submitButton').click( function() {
                 });
 
 
-
-
                 // Create Attributes sidebar list
                 $('#and_Attributes_form, #or_Attributes_form').html('');
                 $.each(res, function (key, value) {
@@ -204,7 +201,7 @@ $('button#submitButton').click( function() {
                         '</p>');
                 });
                 $('#map_loading').hide();
-                $('.option_panel').css('right','20px');
+                $('.option_panel').css('right','13px');
 
 
                 $('#and_Attributes_form input').change(function() {
@@ -212,13 +209,234 @@ $('button#submitButton').click( function() {
                     $.each($('#and_Attributes_form').serializeArray(), function (i, field) {
                         pAttributes.push(field.name);
                     });
+                    $('.left_option_panel').css('left','13px');
                     setTimeout(function() {
                         clearMap();
                         var rand_color = getRandomColor();
                         if(pAttributes.length>0){
-                            $.each(result_patterns, function (key, value) {
+                            var sorted_patterns = result_patterns.sort(function(a, b) {
+                                return parseFloat(b.characteristic.score) - parseFloat(a.characteristic.score);
+                            });
+                            $('#zones_form').html('');
+                            var num = 0;
+                            $.each(sorted_patterns, function (key, value) {
                                 //if(!eq_arrays(pAttributes,value.characteristic.positiveAttributes)){return true;}
                                 if(!pAttributes.containsAll(value.characteristic.positiveAttributes)){return true;}
+                                $('#zones_form').append('<p class="checkbox tooltipped"  data-position="bottom" data-tooltip="'+value.characteristic.score+'">'+
+                                    '<input type="checkbox" name="'+value.subgraph+'" id="zone_'+value.subgraph+'" />'+
+                                    '<label for="zone_'+value.subgraph+'">'+value.characteristic.positiveAttributes+'</label>'+
+                                    '</p>');
+                                if(num<20){
+                                    var zone = new L.LayerGroup();
+                                    L.geoJson(value['zone'], {
+                                        color: rand_color,
+                                        fillColor: rand_color,
+                                        weight: 1,
+                                        fillOpacity: 0.3
+                                    }).on('click', function (e) {
+                                        $('#stats_content').html("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes);
+                                        $('#modal1').modal('open');
+                                        $('#modal_tabs').tabs('select_tab', 'stats');
+                                        if(window.myBar){
+                                            window.myBar = window.myBar.clear();
+                                            window.myBar.destroy();
+                                        }
+                                        $.ajax({
+                                            url: "controller/statistics",
+                                            data: {
+                                                "city": $('#city').val(),
+                                                "zone": value.subgraph,
+                                            },
+                                            cache: false,
+                                            type: "GET",
+                                            success: function (response) {
+                                                var labels = [];
+                                                var attrs_vals = [];
+                                                var sum_vals = [];
+                                                var total_zone = 0;
+                                                var total_sum = 0;
+                                                $.each(response.attributes, function (k, v) {
+                                                    total_zone+=v;
+                                                });
+                                                $.each(response.sums, function (k, v) {
+                                                    total_sum+=v;
+                                                });
+                                                $.each(response.attributes, function (k, v) {
+                                                    labels.push(k);
+                                                    attrs_vals.push(v/total_zone);
+                                                });
+                                                $.each(response.sums, function (k, v) {
+                                                    sum_vals.push(v/total_sum);
+                                                });
+
+                                                var color = Chart.helpers.color;
+                                                var barChartData = {
+                                                    labels: labels,
+                                                    datasets: [{
+                                                        label: 'Zone',
+                                                        backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                                                        borderColor: window.chartColors.red,
+                                                        borderWidth: 1,
+                                                        data: attrs_vals
+                                                    }, {
+                                                        label: 'City',
+                                                        backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+                                                        borderColor: window.chartColors.blue,
+                                                        borderWidth: 1,
+                                                        data: sum_vals
+                                                    }]
+
+                                                };
+
+                                                window.myBar = new Chart(ctx, {
+                                                    type: 'bar',
+                                                    data: barChartData,
+                                                    options: {
+                                                        responsive: true,
+                                                        legend: {
+                                                            position: 'top',
+                                                        },
+                                                        title: {
+                                                            display: true,
+                                                            text: 'Zone Attributes Statistics'
+                                                        }
+                                                    }
+                                                });
+                                            },
+                                            error: function (xhr) {
+                                                console.log(xhr);
+                                            }
+                                        });
+                                    }).addTo(mymap);
+                                    num++;
+                                }
+                            });
+                        }
+                        $('.tooltipped').tooltip({delay: 100});
+                        $('#zones_form input').change(function() {
+                            var pAttributes2 = [];
+                            $.each($('#zones_form ').serializeArray(), function (i, field) {
+                                pAttributes2.push(field.name);
+                            });
+                            clearMap();
+                            var rand_color = getRandomColor();
+                            var zone = new L.LayerGroup();
+                            $.each(pAttributes2, function (i,ch) {
+                                $.each(sorted_patterns , function (key, value) {
+                                    if(ch==value.subgraph){
+                                        L.geoJson(value['zone'], {
+                                            color: rand_color,
+                                            fillColor: rand_color,
+                                            weight: 1,
+                                            fillOpacity: 0.3
+                                        }).on('click', function (e) {
+                                            $('#stats_content').html("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes);
+                                            $('#modal1').modal('open');
+                                            $('#modal_tabs').tabs('select_tab', 'stats');
+                                            if(window.myBar){
+                                                window.myBar = window.myBar.clear();
+                                                window.myBar.destroy();
+                                            }
+                                            $.ajax({
+                                                url: "controller/statistics",
+                                                data: {
+                                                    "city": $('#city').val(),
+                                                    "zone": value.subgraph,
+                                                },
+                                                cache: false,
+                                                type: "GET",
+                                                success: function (response) {
+                                                    var labels = [];
+                                                    var attrs_vals = [];
+                                                    var sum_vals = [];
+                                                    var total_zone = 0;
+                                                    var total_sum = 0;
+                                                    $.each(response.attributes, function (k, v) {
+                                                        total_zone+=v;
+                                                    });
+                                                    $.each(response.sums, function (k, v) {
+                                                        total_sum+=v;
+                                                    });
+                                                    $.each(response.attributes, function (k, v) {
+                                                        labels.push(k);
+                                                        attrs_vals.push(v/total_zone);
+                                                    });
+                                                    $.each(response.sums, function (k, v) {
+                                                        sum_vals.push(v/total_sum);
+                                                    });
+
+                                                    var color = Chart.helpers.color;
+                                                    var barChartData = {
+                                                        labels: labels,
+                                                        datasets: [{
+                                                            label: 'Zone',
+                                                            backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                                                            borderColor: window.chartColors.red,
+                                                            borderWidth: 1,
+                                                            data: attrs_vals
+                                                        }, {
+                                                            label: 'City',
+                                                            backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+                                                            borderColor: window.chartColors.blue,
+                                                            borderWidth: 1,
+                                                            data: sum_vals
+                                                        }]
+
+                                                    };
+
+                                                    window.myBar = new Chart(ctx, {
+                                                        type: 'bar',
+                                                        data: barChartData,
+                                                        options: {
+                                                            responsive: true,
+                                                            legend: {
+                                                                position: 'top',
+                                                            },
+                                                            title: {
+                                                                display: true,
+                                                                text: 'Zone Attributes Statistics'
+                                                            }
+                                                        }
+                                                    });
+                                                },
+                                                error: function (xhr) {
+                                                    console.log(xhr);
+                                                }
+                                            });
+
+                                        }).addTo(mymap);
+                                        return false;
+                                    }
+                                });
+                            });
+
+                        });
+                    }, 0);
+                });
+
+
+                $('#or_Attributes_form input').change(function() {
+                    var pAttributes = [];
+                    $.each($('#or_Attributes_form').serializeArray(), function (i, field) {
+                        pAttributes.push(field.name);
+                    });
+                    $('.left_option_panel').css('left','13px');
+                    setTimeout(function() {
+                        clearMap();
+                        var rand_color = getRandomColor();
+                        var sorted_patterns = result_patterns.sort(function(a, b) {
+                            return parseFloat(b.characteristic.score) - parseFloat(a.characteristic.score);
+                        });
+                        $('#zones_form').html('');
+                        var num = 0;
+                        $.each(sorted_patterns , function (key, value) {
+
+                            if(!value.characteristic.positiveAttributes.containsAny(pAttributes)){return true;}
+                            $('#zones_form').append('<p class="checkbox tooltipped"  data-position="bottom" data-tooltip="'+value.characteristic.score+'">'+
+                                '<input type="checkbox" name="'+value.subgraph+'" id="zone_'+value.subgraph+'" />'+
+                                '<label for="zone_'+value.subgraph+'">'+value.characteristic.positiveAttributes+'</label>'+
+                                '</p>');
+                            if(num<20){
                                 var zone = new L.LayerGroup();
                                 L.geoJson(value['zone'], {
                                     color: rand_color,
@@ -227,177 +445,185 @@ $('button#submitButton').click( function() {
                                     fillOpacity: 0.3
                                 }).on('click', function (e) {
                                     $('#stats_content').html("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes);
-
-
                                     $('#modal1').modal('open');
                                     $('#modal_tabs').tabs('select_tab', 'stats');
-
                                     if(window.myBar){
                                         window.myBar = window.myBar.clear();
                                         window.myBar.destroy();
                                     }
-                                    var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                                    var color = Chart.helpers.color;
-                                    var barChartData = {
-                                        labels: ["Test", "February", "March", "April", "May", "June", "July"],
-                                        datasets: [{
-                                            label: 'Zone',
-                                            backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-                                            borderColor: window.chartColors.red,
-                                            borderWidth: 1,
-                                            data: [
-                                                randomScalingFactor(),
-                                                randomScalingFactor(),
-                                                randomScalingFactor(),
-                                                randomScalingFactor(),
-                                                randomScalingFactor(),
-                                                randomScalingFactor(),
-                                                randomScalingFactor()
-                                            ]
-                                        }, {
-                                            label: 'City',
-                                            backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
-                                            borderColor: window.chartColors.blue,
-                                            borderWidth: 1,
-                                            data: [
-                                                randomScalingFactor(),
-                                                randomScalingFactor(),
-                                                randomScalingFactor(),
-                                                randomScalingFactor(),
-                                                randomScalingFactor(),
-                                                randomScalingFactor(),
-                                                randomScalingFactor()
-                                            ]
-                                        }]
+                                    $.ajax({
+                                        url: "controller/statistics",
+                                        data: {
+                                            "city": $('#city').val(),
+                                            "zone": value.subgraph,
+                                        },
+                                        cache: false,
+                                        type: "GET",
+                                        success: function (response) {
+                                            var labels = [];
+                                            var attrs_vals = [];
+                                            var sum_vals = [];
+                                            var total_zone = 0;
+                                            var total_sum = 0;
+                                            $.each(response.attributes, function (k, v) {
+                                                total_zone+=v;
+                                            });
+                                            $.each(response.sums, function (k, v) {
+                                                total_sum+=v;
+                                            });
+                                            $.each(response.attributes, function (k, v) {
+                                                labels.push(k);
+                                                attrs_vals.push(v/total_zone);
+                                            });
+                                            $.each(response.sums, function (k, v) {
+                                                sum_vals.push(v/total_sum);
+                                            });
 
-                                    };
+                                            var color = Chart.helpers.color;
+                                            var barChartData = {
+                                                labels: labels,
+                                                datasets: [{
+                                                    label: 'Zone',
+                                                    backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                                                    borderColor: window.chartColors.red,
+                                                    borderWidth: 1,
+                                                    data: attrs_vals
+                                                }, {
+                                                    label: 'City',
+                                                    backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+                                                    borderColor: window.chartColors.blue,
+                                                    borderWidth: 1,
+                                                    data: sum_vals
+                                                }]
 
-                                    window.myBar = new Chart(ctx, {
-                                        type: 'bar',
-                                        data: barChartData,
-                                        options: {
-                                            responsive: true,
-                                            legend: {
-                                                position: 'top',
-                                            },
-                                            title: {
-                                                display: true,
-                                                text: 'Zone Attributes Statistics'
-                                            }
+                                            };
+
+                                            window.myBar = new Chart(ctx, {
+                                                type: 'bar',
+                                                data: barChartData,
+                                                options: {
+                                                    responsive: true,
+                                                    legend: {
+                                                        position: 'top',
+                                                    },
+                                                    title: {
+                                                        display: true,
+                                                        text: 'Zone Attributes Statistics'
+                                                    }
+                                                }
+                                            });
+                                        },
+                                        error: function (xhr) {
+                                            console.log(xhr);
                                         }
                                     });
-                                    // popup
-                                    //     .setLatLng(e.latlng)
-                                    //     .setContent("Positive Attributes for this Zone: " + pAttributes)
-                                    //     .openOn(mymap);
                                 }).addTo(mymap);
+                                num++;
+                            }
+                        });
+                        $('.tooltipped').tooltip({delay: 100});
+                        $('#zones_form input').change(function() {
+                            var pAttributes2 = [];
+                            $.each($('#zones_form ').serializeArray(), function (i, field) {
+                                pAttributes2.push(field.name);
                             });
-                        }
-                    }, 0);
-                });
-
-                $('#or_Attributes_form input').change(function() {
-                    var pAttributes = [];
-                    $.each($('#or_Attributes_form').serializeArray(), function (i, field) {
-                        pAttributes.push(field.name);
-                    });
-                    setTimeout(function() {
-                        clearMap();
-                        var rand_color = getRandomColor();
-                        $.each(result_patterns, function (key, value) {
-
-                            if(!value.characteristic.positiveAttributes.containsAny(pAttributes)){return true;}
+                            clearMap();
+                            var rand_color = getRandomColor();
                             var zone = new L.LayerGroup();
-                            L.geoJson(value['zone'], {
-                                color: rand_color,
-                                fillColor: rand_color,
-                                weight: 1,
-                                fillOpacity: 0.3
-                            }).on('click', function (e) {
-                                console.log(value);
-                                $('#stats_content').html("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes);
-                                $('#modal1').modal('open');
-                                $('#modal_tabs').tabs('select_tab', 'stats');
-                                //console.log(value.characteristic.positiveAttributes);
-                                if(window.myBar){
-                                    window.myBar = window.myBar.clear();
-                                    window.myBar.destroy();
-
-                                }
-                                // console.log($('#city').val());
-                                // console.log(value.subgraph);
-                                $.ajax({
-                                    url: "controller/statistics",
-                                    data: {
-                                        "city": $('#city').val(),
-                                        "zone": value.subgraph,
-                                    },
-                                    cache: false,
-                                    type: "GET",
-                                    success: function (response) {
-                                        console.log(response);
-                                        var labels = [];
-                                        var attrs_vals = [];
-                                        var sum_vals = [];
-                                        $.each(response.attributes, function (k, v) {
-                                            labels.push(k);
-                                            attrs_vals.push(v);
-                                        });
-                                        $.each(response.sums, function (k, v) {
-                                            sum_vals.push(v);
-                                        });
-
-                                        var color = Chart.helpers.color;
-                                        var barChartData = {
-                                            //labels: ["Test", "February", "March", "April", "May", "June", "July"],
-                                            labels: labels,
-                                            datasets: [{
-                                                label: 'Zone',
-                                                backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-                                                borderColor: window.chartColors.red,
-                                                borderWidth: 1,
-                                                data: attrs_vals
-                                            }, {
-                                                label: 'City',
-                                                backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
-                                                borderColor: window.chartColors.blue,
-                                                borderWidth: 1,
-                                                data: sum_vals
-                                            }]
-
-                                        };
-
-                                        window.myBar = new Chart(ctx, {
-                                            type: 'bar',
-                                            data: barChartData,
-                                            options: {
-                                                responsive: true,
-                                                legend: {
-                                                    position: 'top',
-                                                },
-                                                title: {
-                                                    display: true,
-                                                    text: 'Zone Attributes Statistics'
-                                                }
+                            var el_val = $(this).attr('name');
+                            //console.log(pAttributes2);
+                            $.each(pAttributes2, function (i,ch) {
+                                //console.log(ch);
+                                $.each(sorted_patterns , function (key, value) {
+                                    //console.log(value.subgraph);
+                                    //if(pAttributes2.indexOf(value.subgraph)>-1){
+                                    if(ch==value.subgraph){
+                                        L.geoJson(value['zone'], {
+                                            color: rand_color,
+                                            fillColor: rand_color,
+                                            weight: 1,
+                                            fillOpacity: 0.3
+                                        }).on('click', function (e) {
+                                            $('#stats_content').html("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes);
+                                            $('#modal1').modal('open');
+                                            $('#modal_tabs').tabs('select_tab', 'stats');
+                                            if(window.myBar){
+                                                window.myBar = window.myBar.clear();
+                                                window.myBar.destroy();
                                             }
-                                        });
+                                            $.ajax({
+                                                url: "controller/statistics",
+                                                data: {
+                                                    "city": $('#city').val(),
+                                                    "zone": value.subgraph,
+                                                },
+                                                cache: false,
+                                                type: "GET",
+                                                success: function (response) {
+                                                    var labels = [];
+                                                    var attrs_vals = [];
+                                                    var sum_vals = [];
+                                                    var total_zone = 0;
+                                                    var total_sum = 0;
+                                                    $.each(response.attributes, function (k, v) {
+                                                        total_zone+=v;
+                                                    });
+                                                    $.each(response.sums, function (k, v) {
+                                                        total_sum+=v;
+                                                    });
+                                                    $.each(response.attributes, function (k, v) {
+                                                        labels.push(k);
+                                                        attrs_vals.push(v/total_zone);
+                                                    });
+                                                    $.each(response.sums, function (k, v) {
+                                                        sum_vals.push(v/total_sum);
+                                                    });
 
-                                        // console.log(labels);
-                                        // console.log(response);
-                                    },
-                                    error: function (xhr) {
+                                                    var color = Chart.helpers.color;
+                                                    var barChartData = {
+                                                        labels: labels,
+                                                        datasets: [{
+                                                            label: 'Zone',
+                                                            backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                                                            borderColor: window.chartColors.red,
+                                                            borderWidth: 1,
+                                                            data: attrs_vals
+                                                        }, {
+                                                            label: 'City',
+                                                            backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+                                                            borderColor: window.chartColors.blue,
+                                                            borderWidth: 1,
+                                                            data: sum_vals
+                                                        }]
 
+                                                    };
+
+                                                    window.myBar = new Chart(ctx, {
+                                                        type: 'bar',
+                                                        data: barChartData,
+                                                        options: {
+                                                            responsive: true,
+                                                            legend: {
+                                                                position: 'top',
+                                                            },
+                                                            title: {
+                                                                display: true,
+                                                                text: 'Zone Attributes Statistics'
+                                                            }
+                                                        }
+                                                    });
+                                                },
+                                                error: function (xhr) {
+                                                    console.log(xhr);
+                                                }
+                                            });
+
+                                        }).addTo(mymap);
+                                        return false;
                                     }
                                 });
+                            });
 
-
-
-
-                                // popup
-                                //     .setLatLng(e.latlng)
-                                //     .setContent("Positive Attributes for this Zone: " + pAttributes)
-                                //     .openOn(mymap);
-                            }).addTo(mymap);
                         });
                     }, 0);
                 });
@@ -432,6 +658,10 @@ Array.prototype.containsAny = function(arr) {
         return arr.indexOf(v) >= 0
     })
 };
+
+function clearMap() {
+
+}
 
 function clearMap() {
     for(i in mymap._layers) {
