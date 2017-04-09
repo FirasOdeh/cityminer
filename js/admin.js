@@ -6,6 +6,8 @@ jQuery(document).ready(function($){
     var city = "";
     var lat = "";
     var lng = "";
+    var scope = "";
+    $('.modal').modal();
 
     var adminmap = L.map('adminmap').setView([45.754, 4.842], 13);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
@@ -55,6 +57,7 @@ jQuery(document).ready(function($){
             type: "GET",
             success: function (response) {
                 $(self).closest("tr")[0].remove();
+                Materialize.toast('The city have been removed', 4000) ;
             }
         });
     });
@@ -74,6 +77,48 @@ jQuery(document).ready(function($){
             weight: 2,
             fillOpacity: 0.3
         }).addTo(adminmap);
+
+    });
+
+    $("#import_btn").click(function () {
+        $('#modal2').modal('open');
+
+    });
+
+    $("#start_import_btn").click(function () {
+        $(".loader-container").show();
+        $("#start_import_btn").hide();
+        $(".form-container").hide();
+        var label = $("#label_input").val();
+        var level = $("#level_input").val();
+        $.ajax({
+            url: "admin/import?city="+encodeURI(city)+"&label="+label+"&lat="+lat+"&lng="+lng+"&scope="+scope+"&level="+level,
+            type: "GET",
+            dataType: 'json',
+            success: function (response) {
+                console.log(response);
+                if(response.success === true){
+                    Materialize.toast('The city has been added', 4000) ;
+                    $('#modal2').modal('close');
+                    $(".loader-container").hide();
+                    $("#start_import_btn").show();
+                    $(".form-container").show();
+                } else {
+                    Materialize.toast('Error', 4000) ;
+                    $('#modal2').modal('close');
+                    $(".loader-container").hide();
+                    $("#start_import_btn").show();
+                    $(".form-container").show();
+                }
+            },
+            error: function () {
+                Materialize.toast('Error', 4000) ;
+                $('#modal2').modal('close');
+                $(".loader-container").hide();
+                $("#start_import_btn").show();
+                $(".form-container").show();
+            }
+        });
     });
 
     function clearMap() {

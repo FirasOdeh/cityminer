@@ -9,10 +9,8 @@
 
 Class AdminController extends CI_Controller {
     public $places = null;
-
     public function __construct() {
         parent::__construct();
-
         // Load Template
         $this->load->library('template');
         $this->load->library("Aauth");
@@ -29,33 +27,49 @@ Class AdminController extends CI_Controller {
     }
 
     public function import() {
-        //header('Content-Type: application/json');
-        $city = $_GET["city"];
+        header('Content-Type: application/json');
+        $city = urldecode($_GET["city"]);
+        $label = $_GET["label"];
         $lat = $_GET["lat"];
         $lng = $_GET["lng"];
         $scope = $_GET["scope"];
-        $NElat = $lat + (111.7 * $scope);
-        $NElng = $lng + (85.26 * $scope);
-        $SWlat = $lat - (111.7 * $scope);
-        $SWlng = $lng - (85.26 * $scope);
-        scanFoursquare($NElat, $NElng, $SWlat, $SWlng);
+        $NElat = $lat + ($scope / 111.7);
+        $NElng = $lng + ($scope / 85.26);
+        $SWlat = $lat - ($scope / 111.7);
+        $SWlng = $lng - ($scope / 85.26);
+        $this->scanFoursquare($NElat, $NElng, $SWlat, $SWlng);
+        $this->AdminModel->saveCSV($this->places, $label);
+        $this->AdminModel->buildGraph($label);
+        $this->AdminModel->addCity($city, $label, count($this->places));
 
+        $response["success"] = true;
+        $response["response"] = count($this->places);
+        echo json_encode($response);
 
     }
 
     public function scanFoursquare($NElat, $NElng, $SWlat, $SWlng){
-        $response = $this->DataModel->importCityPlacesGoogle($NElat, $NElng, $SWlat, $SWlng);
-        if (count($response < 50 )){
-            addResult($response);
+        $response = $this->AdminModel->importCityPlacesFoursquare($NElat, $NElng, $SWlat, $SWlng);
+        $this->addResult($response);
+        if (count($response) < 30 ){
+            $this->addResult($response);
         } else {
-            scanFoursquare($NElat, $NElng - (($NElng - $SWlng)/2), $SWlat, $SWlng);
-            scanFoursquare($NElat, $NElng, $SWlat, $SWlng + (($NElng - $SWlng)/2));
+            $this->scanFoursquare($NElat, $NElng - (($NElng - $SWlng)/2), $SWlat, $SWlng);
+            $this->scanFoursquare($NElat, $NElng, $SWlat, $SWlng + (($NElng - $SWlng)/2));
         }
-
     }
 
     public function addResult($result){
-        var_dump($result);
+        foreach ($result as $fsPlace){
+            if(isset($fsPlace->categories[0])){
+                $place = null;
+                $place[] = $fsPlace->id;
+                $place[] = $fsPlace->location->lat;
+                $place[] = $fsPlace->location->lng;
+                $place[] = $fsPlace->categories[0]->name;
+                $this->places[$fsPlace->id] = $place;
+            }
+        }
     }
 
 }

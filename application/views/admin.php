@@ -46,6 +46,54 @@
                                 <button type="submit" id="import_btn" class="waves-effect waves-light btn"> Import </button>
                             </div>
                         </div>
+
+                        <!-- Modal Structure -->
+                        <div id="modal2" class="modal" style="min-height: 40%">
+                            <div class="modal-content">
+                                <h5>Imoprt details</h5>
+                                <div class="form-container">
+                                    <div class="">
+                                        <div class="">
+                                            <div class="input-field s3">
+                                                <i class="material-icons prefix">label</i>
+                                                <input id="label_input" type="text" class="validate">
+                                                <label for="icon_prefix">Label</label>
+                                            </div>
+                                            <div class="input-field s3">
+                                                <i class="material-icons prefix"><i class="material-icons">line_style</i></i>
+
+                                                <select  id="level_input" class="validate">
+                                                    <option>1st (10 categories)</option>
+                                                    <option>2nd () level</option>
+                                                    <option>3rd ()</option>
+                                                </select>
+                                                <label for="icon_telephone">Category level</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="loader-container center" style="display: none;">
+                                    <div class="preloader-wrapper big active">
+                                        <div class="spinner-layer spinner-blue-only">
+                                            <div class="circle-clipper left">
+                                                <div class="circle"></div>
+                                            </div><div class="gap-patch">
+                                                <div class="circle"></div>
+                                            </div><div class="circle-clipper right">
+                                                <div class="circle"></div>
+                                            </div>
+                                        </div>
+                                    </div><br/>
+                                    Please wait, the import can take few minutes
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" id="start_import_btn" class="waves-effect waves-light btn"> Start </button>
+                            </div>
+                        </div>
+
+
                         <div id="adminmap" style="width: 100%; height: 75vh;"></div>
                         <br><br>
                         <br><br>
