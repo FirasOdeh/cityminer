@@ -15,6 +15,17 @@ jQuery(document).ready(function($){
         id: 'mapbox.streets'
     }).addTo(adminmap);
 
+    var areaSelect = L.areaSelect({width:200, height:250});
+    areaSelect.on("change", function() {
+        var bounds = this.getBounds();
+        console.log("--------------------------");
+        console.log(bounds.getSouthWest().lat + ", " + bounds.getSouthWest().lng);
+        console.log(bounds.getNorthEast().lat + ", " + bounds.getNorthEast().lng);
+        console.log("--------------------------");
+    });
+
+
+
     function initializeAutocomplete(id) {
         var element = document.getElementById(id);
         if (element) {
@@ -41,6 +52,7 @@ jQuery(document).ready(function($){
                 lng = place.geometry.location.lng();
 
                 adminmap.setView([lat, lng], 11.5);
+                areaSelect.addTo(adminmap);
                 $("#scope_input").trigger("change");
             }
         }
@@ -82,6 +94,9 @@ jQuery(document).ready(function($){
 
     $("#import_btn").click(function () {
         $('#modal2').modal('open');
+        var bounds = areaSelect.getBounds();
+
+        alert(bounds.getSouthWest().lat + ", " + bounds.getSouthWest().lng + "\n\n" +bounds.getNorthEast().lat + ", " + bounds.getNorthEast().lng);
 
     });
 
@@ -91,6 +106,9 @@ jQuery(document).ready(function($){
         $(".form-container").hide();
         var label = $("#label_input").val();
         var level = $("#level_input").val();
+
+        areaSelect
+
         $.ajax({
             url: "admin/import?city="+encodeURI(city)+"&label="+label+"&lat="+lat+"&lng="+lng+"&scope="+scope+"&level="+level,
             type: "GET",

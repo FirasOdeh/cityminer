@@ -34,7 +34,7 @@ Class DefaultController extends CI_Controller {
     public function admin() {
         $data['username'] = "toto";
         $data['cities'] = $this->AdminModel->getAllCities();
-        $this->template->load('default', 'admin', $data);
+        $this->template->load('admin', 'admin', $data);
     }
 
 

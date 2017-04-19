@@ -364,7 +364,10 @@ $('button#submitButton').click( function() {
                                                     $.each(response.sums, function (k, v) {
                                                         sum_vals.push(v/total_sum);
                                                     });
-
+                                                    console.log(response);
+                                                    console.log(total_zone);
+                                                    console.log(attrs_vals);
+                                                    console.log(sum_vals);
                                                     var color = Chart.helpers.color;
                                                     var barChartData = {
                                                         labels: labels,

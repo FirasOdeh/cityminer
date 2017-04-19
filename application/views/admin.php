@@ -2,7 +2,7 @@
 <head>
 
     <title>Dashboard</title>
-    <link rel="stylesheet" href="css/leaflet.css" />
+
 
 </head>
 <body>
@@ -170,5 +170,6 @@
 
 
 </body>
+
 <script type="text/javascript" src="<?php echo base_url(); ?>js/admin.js"></script>
 </html>
