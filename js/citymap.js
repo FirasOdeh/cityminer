@@ -18,6 +18,8 @@ function onMapClick(e) {
         .openOn(mymap);
 }
 
+
+
 // Global variable for city areas data
 var city_data = {};
 
@@ -26,7 +28,7 @@ var city_data = {};
 jQuery(document).ready(function($){
     $('.modal').modal();
 
-
+    console.log([1,2,3,4,5,"Firas"].diff( [3,4,5] ) );
 
     var win_h = $(window).height();
     var nav_h = $('#site_nav').height();
@@ -126,7 +128,7 @@ $('button#submitButton').click( function() {
                 var result_patterns = response.patterns;
                 var global_zone = new L.LayerGroup();
                 $.each(result_patterns, function (key, value) {
-                    var rand_color = getRandomColor();
+                    //var rand_color = getRandomColor();
                     var poly;
                     var zone = new L.LayerGroup();
                     //var temp_zone = new L.LayerGroup();
@@ -219,6 +221,8 @@ $('button#submitButton').click( function() {
                             });
                             $('#zones_form').html('');
                             var num = 0;
+                            var zones_group = [];
+                            //console.log(sorted_patterns);
                             $.each(sorted_patterns, function (key, value) {
                                 //if(!eq_arrays(pAttributes,value.characteristic.positiveAttributes)){return true;}
                                 if(!pAttributes.containsAll(value.characteristic.positiveAttributes)){return true;}
@@ -226,11 +230,16 @@ $('button#submitButton').click( function() {
                                     '<input type="checkbox" name="'+value.subgraph+'" id="zone_'+value.subgraph+'" />'+
                                     '<label for="zone_'+value.subgraph+'">'+value.characteristic.positiveAttributes+'</label>'+
                                     '</p>');
-                                if(num<20){
+                                if(num==0) {
+                                    zones_group = zones_group.concat(value.subgraph);
+                                }
+                                if(num==0||cover_check(zones_group, value.subgraph)) {
+                                    zones_group = zones_group.concat(value.subgraph);
                                     var zone = new L.LayerGroup();
+                                    var zone_color = get_zone_color(value.characteristic.score);
                                     L.geoJson(value['zone'], {
-                                        color: rand_color,
-                                        fillColor: rand_color,
+                                        color: zone_color,
+                                        fillColor: zone_color,
                                         weight: 1,
                                         fillOpacity: 0.3
                                     }).on('click', function (e) {
@@ -324,9 +333,10 @@ $('button#submitButton').click( function() {
                             $.each(pAttributes2, function (i,ch) {
                                 $.each(sorted_patterns , function (key, value) {
                                     if(ch==value.subgraph){
+                                        var zone_color = get_zone_color(value.characteristic.score);
                                         L.geoJson(value['zone'], {
-                                            color: rand_color,
-                                            fillColor: rand_color,
+                                            color: zone_color,
+                                            fillColor: zone_color,
                                             weight: 1,
                                             fillOpacity: 0.3
                                         }).on('click', function (e) {
@@ -432,6 +442,7 @@ $('button#submitButton').click( function() {
                         });
                         $('#zones_form').html('');
                         var num = 0;
+                        var zones_group = [];
                         $.each(sorted_patterns , function (key, value) {
 
                             if(!value.characteristic.positiveAttributes.containsAny(pAttributes)){return true;}
@@ -439,11 +450,16 @@ $('button#submitButton').click( function() {
                                 '<input type="checkbox" name="'+value.subgraph+'" id="zone_'+value.subgraph+'" />'+
                                 '<label for="zone_'+value.subgraph+'">'+value.characteristic.positiveAttributes+'</label>'+
                                 '</p>');
-                            if(num<20){
+                            if(num==0) {
+                                zones_group = zones_group.concat(value.subgraph);
+                            }
+                            if(num==0||cover_check(zones_group, value.subgraph)) {
+                                zones_group = zones_group.concat(value.subgraph);
                                 var zone = new L.LayerGroup();
+                                var zone_color = get_zone_color(value.characteristic.score);
                                 L.geoJson(value['zone'], {
-                                    color: rand_color,
-                                    fillColor: rand_color,
+                                    color: zone_color,
+                                    fillColor: zone_color,
                                     weight: 1,
                                     fillOpacity: 0.3
                                 }).on('click', function (e) {
@@ -541,9 +557,10 @@ $('button#submitButton').click( function() {
                                     //console.log(value.subgraph);
                                     //if(pAttributes2.indexOf(value.subgraph)>-1){
                                     if(ch==value.subgraph){
+                                        var zone_color = get_zone_color(value.characteristic.score);
                                         L.geoJson(value['zone'], {
-                                            color: rand_color,
-                                            fillColor: rand_color,
+                                            color: zone_color,
+                                            fillColor: zone_color,
                                             weight: 1,
                                             fillOpacity: 0.3
                                         }).on('click', function (e) {
@@ -662,7 +679,31 @@ Array.prototype.containsAny = function(arr) {
     })
 };
 
-function clearMap() {
+Array.prototype.diff = function(a) {
+    return this.filter(function(i) {return a.indexOf(i) < 0;});
+};
+
+function cover_check(group, zone) {
+    var size = zone.length;
+    var diff = zone.diff(group);
+    if(diff){
+        var diff_size = diff.length;
+        //console.log(diff_size/size);
+        if((diff_size/size)>=0.8){
+            return true;
+        }
+    }
+    return false;
+}
+
+function get_zone_color(score){
+    if(score>=0.015){
+        return "#34bf49";
+    }
+    if(score>=0.008){
+        return "#feba02";
+    }
+    return "#ff0000";
 
 }
 

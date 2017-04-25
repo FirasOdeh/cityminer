@@ -107,7 +107,7 @@ jQuery(document).ready(function($){
         var label = $("#label_input").val();
         var level = $("#level_input").val();
 
-        areaSelect
+
 
         $.ajax({
             url: "admin/import?city="+encodeURI(city)+"&label="+label+"&lat="+lat+"&lng="+lng+"&scope="+scope+"&level="+level,
