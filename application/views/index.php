@@ -3,7 +3,6 @@
     <title>CityMiner</title>
 </head>
 <body>
-
 <div class="container">
     <div class="col s12 m12">
         <br><br>

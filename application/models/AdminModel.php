@@ -46,6 +46,7 @@ class AdminModel extends CI_Model {
     public function buildGraph($label){
         chdir("data/algorithms/graphMaker/");
         exec("java -jar graphMaker.jar 400 " . $label . ".csv", $k , $j );
+        unlink("$label.csv");
         $oldmask = umask(0);
         if (!file_exists('../../cities/'.$label)) {
             mkdir('../../cities/'.$label, 0777, true);

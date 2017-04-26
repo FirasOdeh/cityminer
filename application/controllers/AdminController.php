@@ -30,13 +30,10 @@ Class AdminController extends CI_Controller {
         header('Content-Type: application/json');
         $city = urldecode($_GET["city"]);
         $label = $_GET["label"];
-        $lat = $_GET["lat"];
-        $lng = $_GET["lng"];
-        $scope = $_GET["scope"];
-        $NElat = $lat + ($scope / 111.7);
-        $NElng = $lng + ($scope / 85.26);
-        $SWlat = $lat - ($scope / 111.7);
-        $SWlng = $lng - ($scope / 85.26);
+        $NElat = $_GET["ne_lat"];
+        $NElng = $_GET["ne_lng"];
+        $SWlat = $_GET["sw_lat"];
+        $SWlng = $_GET["sw_lng"];
         $this->scanFoursquare($NElat, $NElng, $SWlat, $SWlng);
         $this->AdminModel->saveCSV($this->places, $label);
         $this->AdminModel->buildGraph($label);

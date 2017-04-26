@@ -38,11 +38,6 @@
                             </div>
 
                             <div class="input-field col s2">
-                                <input type="text" id="scope_input" value="5">
-                                <label>Scope (Km)</label>
-
-                            </div>
-                            <div class="input-field col s2">
                                 <button type="submit" id="import_btn" class="waves-effect waves-light btn"> Import </button>
                             </div>
                         </div>

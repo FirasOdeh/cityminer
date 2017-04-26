@@ -4,9 +4,10 @@
 jQuery(document).ready(function($){
     var country = "";
     var city = "";
-    var lat = "";
-    var lng = "";
-    var scope = "";
+    var NElat = "";
+    var NElng = "";
+    var SWlat = "";
+    var SWlng = "";
     $('.modal').modal();
 
     var adminmap = L.map('adminmap').setView([45.754, 4.842], 13);
@@ -18,10 +19,11 @@ jQuery(document).ready(function($){
     var areaSelect = L.areaSelect({width:200, height:250});
     areaSelect.on("change", function() {
         var bounds = this.getBounds();
-        console.log("--------------------------");
-        console.log(bounds.getSouthWest().lat + ", " + bounds.getSouthWest().lng);
-        console.log(bounds.getNorthEast().lat + ", " + bounds.getNorthEast().lng);
-        console.log("--------------------------");
+        SWlat = bounds.getSouthWest().lat;
+        SWlng = bounds.getSouthWest().lng;
+        NElat = bounds.getNorthEast().lat;
+        NElng = bounds.getNorthEast().lng;
+
     });
 
 
@@ -74,24 +76,6 @@ jQuery(document).ready(function($){
         });
     });
 
-    $("#scope_input").change(function () {
-        clearMap();
-        scope = $(this).val();
-        var points = [
-            [lat - (scope / 111.7), lng + (scope / 85.26)],
-            [lat + (scope / 111.7), lng + (scope / 85.26)],
-            [lat + (scope / 111.7), lng - (scope / 85.26)],
-            [lat - (scope / 111.7), lng - (scope / 85.26)]
-        ];
-        L.polygon(points, {
-            color: '#00ad45',
-            fillColor: '#34bf49',
-            weight: 2,
-            fillOpacity: 0.3
-        }).addTo(adminmap);
-
-    });
-
     $("#import_btn").click(function () {
         $('#modal2').modal('open');
         var bounds = areaSelect.getBounds();
@@ -110,7 +94,7 @@ jQuery(document).ready(function($){
 
 
         $.ajax({
-            url: "admin/import?city="+encodeURI(city)+"&label="+label+"&lat="+lat+"&lng="+lng+"&scope="+scope+"&level="+level,
+            url: "admin/import?city="+encodeURI(city)+"&label="+label+"&ne_lat="+NElat+"&ne_lng="+NElng+"&sw_lat="+SWlat+"&sw_lng="+SWlng+"&level="+level,
             type: "GET",
             dataType: 'json',
             success: function (response) {
