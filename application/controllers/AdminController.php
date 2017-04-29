@@ -9,6 +9,8 @@
 
 Class AdminController extends CI_Controller {
     public $places = null;
+    public $categories = Array();
+    public $line = Array();
     public function __construct() {
         parent::__construct();
         // Load Template
@@ -21,7 +23,8 @@ Class AdminController extends CI_Controller {
     public function deleteCity() {
         header('Content-Type: application/json');
         $city_id = $_GET["city_id"];
-        $response["result"] = $this->AdminModel->deleteCity($city_id);
+        $label = $_GET["label"];
+        $response["result"] = $this->AdminModel->deleteCity($city_id, $label);
         $response["errors"] = Array();
         echo json_encode($response);
     }
@@ -30,11 +33,13 @@ Class AdminController extends CI_Controller {
         header('Content-Type: application/json');
         $city = urldecode($_GET["city"]);
         $label = $_GET["label"];
+        $level = $_GET["level"];
         $NElat = $_GET["ne_lat"];
         $NElng = $_GET["ne_lng"];
         $SWlat = $_GET["sw_lat"];
         $SWlng = $_GET["sw_lng"];
         $this->scanFoursquare($NElat, $NElng, $SWlat, $SWlng);
+        $this->places = $this->AdminModel->foursquareCategoriesProjection($this->places, $level);
         $this->AdminModel->saveCSV($this->places, $label);
         $this->AdminModel->buildGraph($label);
         $this->AdminModel->addCity($city, $label, count($this->places));
@@ -68,7 +73,6 @@ Class AdminController extends CI_Controller {
             }
         }
     }
-
 }
 
 ?>

@@ -58,9 +58,8 @@
                                                 <i class="material-icons prefix"><i class="material-icons">line_style</i></i>
 
                                                 <select  id="level_input" class="validate">
-                                                    <option>1st (10 categories)</option>
-                                                    <option>2nd () level</option>
-                                                    <option>3rd ()</option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
                                                 </select>
                                                 <label for="icon_telephone">Category level</label>
                                             </div>
@@ -108,7 +107,7 @@
                                         <td><?php echo $city->name ?></td>
                                         <td><?php echo $city->places_number ?></td>
                                         <td><a class="btn-floating waves-effect grey lighten-3 " data-position="left" data-delay="0" id="del_'.$pk->id.'">
-                                                <i class="material-icons grey-text darken-3-text delete-city-btn" data-city_id="<?php echo $city->id ?>">delete</i>
+                                                <i class="material-icons grey-text darken-3-text delete-city-btn" data-label="<?php echo $city->label ?>" data-city_id="<?php echo $city->id ?>">delete</i>
                                             </a></td>
                                     </tr>
                                 <?php }

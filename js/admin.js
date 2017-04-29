@@ -67,7 +67,7 @@ jQuery(document).ready(function($){
     $(".delete-city-btn").click(function () {
         var self = this;
         $.ajax({
-            url: "admin/deleteCity?city_id=" + $(this).data("city_id"),
+            url: "admin/deleteCity?city_id=" + $(this).data("city_id") + "&label=" + $(this).data("label"),
             type: "GET",
             success: function (response) {
                 $(self).closest("tr")[0].remove();
@@ -78,10 +78,6 @@ jQuery(document).ready(function($){
 
     $("#import_btn").click(function () {
         $('#modal2').modal('open');
-        var bounds = areaSelect.getBounds();
-
-        alert(bounds.getSouthWest().lat + ", " + bounds.getSouthWest().lng + "\n\n" +bounds.getNorthEast().lat + ", " + bounds.getNorthEast().lng);
-
     });
 
     $("#start_import_btn").click(function () {
@@ -105,6 +101,7 @@ jQuery(document).ready(function($){
                     $(".loader-container").hide();
                     $("#start_import_btn").show();
                     $(".form-container").show();
+                    window.location.reload();
                 } else {
                     Materialize.toast('Error', 4000) ;
                     $('#modal2').modal('close');
