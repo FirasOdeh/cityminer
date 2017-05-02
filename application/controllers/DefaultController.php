@@ -16,7 +16,8 @@ Class DefaultController extends CI_Controller {
     // Show index page
     public function index() {
         if($this->aauth->is_loggedin()){
-            $this->template->load('default', 'dashboard', null);
+            $data['cities'] = $this->AdminModel->getAllCities();
+            $this->template->load('default', 'dashboard', $data);
 
         }else{
             $data = array(
@@ -27,8 +28,8 @@ Class DefaultController extends CI_Controller {
     }
 
     public function dashboard() {
-
-        $this->template->load('default', 'dashboard', null);
+        $data['cities'] = $this->AdminModel->getAllCities();
+        $this->template->load('default', 'dashboard', $data);
     }
 
     public function admin() {

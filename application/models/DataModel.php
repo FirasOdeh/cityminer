@@ -76,6 +76,9 @@ class DataModel extends CI_Model {
         $result = new StdClass();
         $result->attributes = new StdClass();
         $result->sums = new StdClass();
+        foreach($zone as &$z){
+            $z = str_replace(" ","", $z);
+        }
         foreach ($graph->vertices as $vertex){
             if(in_array($vertex->vertexId, $zone)){
                 for ($i=0 ; $i<count($attributes); $i++ ){
