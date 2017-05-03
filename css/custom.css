@@ -164,10 +164,15 @@ a.page-logo { font-weight: 100 !important; }
 	width: 340px;
 	right: -365px;
 	top: 200px;
+
 	-webkit-transition:all .4s ease;
 	-moz-transition:all .4s ease;
 	-ms-transition:all .4s ease;
 	-o-transition:all .4s ease;
+}
+.option_panel .card-content {
+	max-height: 400px;
+	overflow: auto;
 }
 .loading_div {display: inline-block;margin-top: 15px;display: none }
 .map_modal { padding: 0px !important;margin: 0px !important;}
@@ -192,3 +197,4 @@ a.page-logo { font-weight: 100 !important; }
 .left_option_panel .card-title {
 	padding: 2px 15px;
 }
+#city {z-index: 99999;}

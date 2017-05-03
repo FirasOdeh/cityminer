@@ -192,6 +192,7 @@ CREATE TABLE IF NOT EXISTS `aauth_login_attempts` (
 CREATE TABLE IF NOT EXISTS `cities` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
+  `label` varchar(255) NOT NULL,
   `places_number` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

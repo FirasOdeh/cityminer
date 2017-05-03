@@ -19,6 +19,7 @@
                         <option value="<?php echo $city->label ?>"><?php echo $city->name ?></option>
                     <?php }
                     ?>
+                    <option value="paris">Paris</option>
 
                 </select>
                 <label>City</label>
@@ -39,7 +40,7 @@
                 <label for="delta">Delta</label>
             </div>
             <div id="time_input" class="input-field col s12 m1">
-                <input placeholder="Placeholder" id="time" type="text" class="validate" value="200">
+                <input placeholder="Placeholder" id="time" type="text" class="validate" value="50">
                 <label for="time">Time</label>
             </div>
             <div id="mincov_input" class="input-field col s12 m1 option_hide">

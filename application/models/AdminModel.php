@@ -30,14 +30,21 @@ class AdminModel extends CI_Model {
         $client_secret = "client_secret=RZJ2FNKEMC4BF5BSBQZCLY4OL1MGIDR1U4XOONRCZCQX022W";
         $url = "https://api.foursquare.com/v2/venues/search?intent=browse&ne=" .$NElat. ",". $NElng. "&sw=".$SWlat.",".$SWlng."&$v&$client_id&$client_secret";
         $ch = curl_init();
+        if (FALSE === $ch)
+            throw new Exception('failed to initialize');
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        if (FALSE === curl_exec($ch))
+            throw new Exception(curl_error($ch), curl_errno($ch));
         $response = json_decode(curl_exec($ch));
         return $response->response->venues;
     }
 
     public function saveCSV($places, $label){
         $fp = fopen('data/algorithms/graphMaker/' . $label . '.csv', 'w');
+        fputs($fp, "placeId,latitude,longitude,category\n");
         foreach($places as $place){
             fputs($fp, implode($place, ',')."\n");
         }
@@ -47,7 +54,7 @@ class AdminModel extends CI_Model {
     public function buildGraph($label){
         chdir("data/algorithms/graphMaker/");
         exec("java -jar graphMaker.jar 400 " . $label . ".csv", $k , $j );
-        unlink("$label.csv");
+        //unlink("$label.csv");
         $oldmask = umask(0);
         if (!file_exists('../../cities/'.$label)) {
             mkdir('../../cities/'.$label, 0777, true);
@@ -74,6 +81,8 @@ class AdminModel extends CI_Model {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         $response = json_decode(curl_exec($ch));
         $d = Array();
         $this->buildCategories(0, $response->response, $d);

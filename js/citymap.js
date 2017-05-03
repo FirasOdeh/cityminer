@@ -1,4 +1,5 @@
-var mymap = L.map('mainmap').setView([45.754, 4.842], 13);
+//var mymap = L.map('mainmap').setView([45.754, 4.842], 13);
+var mymap = L.map('mainmap').setView([43.296353, 5.370505], 13);
 //var mymap = L.map('mainmap').setView([51.505, -0.09], 13);
 
 attribution = mymap.attributionControl;
@@ -28,13 +29,47 @@ var city_data = {};
 jQuery(document).ready(function($){
     $('.modal').modal();
 
-    console.log([1,2,3,4,5,"Firas"].diff( [3,4,5] ) );
+
+
+
 
     var win_h = $(window).height();
     var nav_h = $('#site_nav').height();
     var options_h = $('#site_options').height();
     var map_h = win_h - nav_h - options_h;
     $('#mainmap').css('height', map_h);
+
+
+    // $.ajax({
+    //     type: "POST",
+    //     //url: "http://localhost/cityminer/data/algorithms/graphMaker/marseille.csv",
+    //     url: "http://localhost/cityminer/data/algorithms/graphMaker/nice.csv",
+    //     dataType: "text",
+    //     success: function(data) {
+    //         console.log("OK");
+    //         var lines = processData(data);
+    //         var num = 0;
+    //         $.each(lines, function (key, value) {
+    //             num++;
+    //             //console.log(value);
+    //             //L.marker([value[1], value[2]]).addTo(mymap);
+    //             var res1 = value[1].split(":");
+    //             var res2 = value[2].split(":");
+    //             //console.log(res1);
+    //             //console.log(res2);
+    //             // L.marker([res1[0], res2[0]]).addTo(mymap);
+    //              L.marker([res1[1], res2[1]]).addTo(mymap);
+    //             // L.polygon([
+    //             //     [res1[0], res2[0]],
+    //             //     [res1[0], res2[1]],
+    //             // ]).addTo(mymap);
+    //         });
+    //         console.log("num = "+ num);
+    //     },
+    //     error: function (xhr) {
+    //         console.log("error");
+    //     }
+    // });
 
 
     $('#city').change(function(){
@@ -738,4 +773,24 @@ function unify(polyList) {
         }
     }
     return unionTemp;
+}
+
+function processData(allText) {
+    var allTextLines = allText.split(/\r\n|\n/);
+    var headers = allTextLines[0].split(',');
+    var lines = [];
+
+    for (var i=1; i<allTextLines.length; i++) {
+        var data = allTextLines[i].split(',');
+        if (data.length == headers.length) {
+
+            var tarr = [];
+            for (var j=0; j<headers.length; j++) {
+                tarr.push(headers[j]+":"+data[j]);
+            }
+            lines.push(tarr);
+        }
+    }
+    //console.log(lines);
+    return lines;
 }

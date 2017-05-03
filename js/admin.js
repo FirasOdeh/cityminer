@@ -23,6 +23,11 @@ jQuery(document).ready(function($){
         SWlng = bounds.getSouthWest().lng;
         NElat = bounds.getNorthEast().lat;
         NElng = bounds.getNorthEast().lng;
+        console.log("=========================");
+        console.log(SWlat);
+        console.log(SWlng);
+        console.log(NElat);
+        console.log(NElng);
 
     });
 
