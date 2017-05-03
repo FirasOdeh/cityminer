@@ -8,7 +8,7 @@
  */
 
 Class AdminController extends CI_Controller {
-    public $places = null;
+    public $places = Array();
     public $categories = Array();
     public $line = Array();
     public function __construct() {
@@ -35,7 +35,7 @@ Class AdminController extends CI_Controller {
         $source = $_POST["source"];
         $city = $_POST["city"];
         $label = $_POST["label"];
-
+        $response["success"] = true;
         if($source == "foursquare"){
             $level = $_POST["level"];
             $NElat = $_POST["ne_lat"];
@@ -48,11 +48,19 @@ Class AdminController extends CI_Controller {
         } else if( $source == "google"){
 
         } else if($source == "csv"){
+            if(move_uploaded_file($_FILES[0]['tmp_name'], 'data/algorithms/graphMaker/' . $label . '.csv'))
+            {
+                $response["success"] = true;
+            }
+            else
+            {
+                $response["success"] = false;
+            }
 
         }
         $this->AdminModel->buildGraph($label);
         $this->AdminModel->addCity($city, $label, count($this->places));
-        $response["success"] = true;
+
         $response["response"] = count($this->places);
         echo json_encode($response);
 

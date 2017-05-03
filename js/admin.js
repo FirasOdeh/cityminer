@@ -79,18 +79,20 @@ jQuery(document).ready(function($){
 
     $("#import_btn").click(function () {
         $('#modal2').modal('open');
+        $("#label_input").val(city);
+        $("#label_input").parent().find("label").addClass("active");
+
     });
 
     $("#start_import_btn").click(function () {
         $(".loader-container").show();
         $("#start_import_btn").hide();
         $(".form-container").hide();
-        var label = $("#label_input").val();
+        var label = guid();
+        city = $("#label_input").val();
         var level = $("#level_input").val();
         var source = $("#source").val();
-
         var data = new FormData();
-
         data.append("source", source);
         data.append("city", city);
         data.append("label", label);
@@ -169,4 +171,13 @@ jQuery(document).ready(function($){
         csvFile = event.target.files;
         console.log(csvFile);
     });
+
+    function guid() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+        return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
+    }
 });
