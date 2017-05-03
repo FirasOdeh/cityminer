@@ -38,6 +38,7 @@ class AdminModel extends CI_Model {
 
     public function saveCSV($places, $label){
         $fp = fopen('data/algorithms/graphMaker/' . $label . '.csv', 'w');
+        fputs($fp, "placeId,latitude,longitude,category\n");
         foreach($places as $place){
             fputs($fp, implode($place, ',')."\n");
         }

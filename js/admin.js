@@ -9,6 +9,7 @@ jQuery(document).ready(function($){
     var SWlat = "";
     var SWlng = "";
     $('.modal').modal();
+    var csvFile;
 
     var adminmap = L.map('adminmap').setView([45.754, 4.842], 13);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
@@ -86,13 +87,33 @@ jQuery(document).ready(function($){
         $(".form-container").hide();
         var label = $("#label_input").val();
         var level = $("#level_input").val();
+        var source = $("#source").val();
 
+        var data = new FormData();
 
+        data.append("source", source);
+        data.append("city", city);
+        data.append("label", label);
+        data.append("level", level);
+        if((source === "google") || (source === "foursquare")){
+            data.append("ne_lat", NElat);
+            data.append("ne_lng", NElng);
+            data.append("sw_lat", SWlat);
+            data.append("sw_lng", SWlng);
+        } else {
+            $.each(csvFile, function(key, value)
+            {
+                data.append(key, value);
+            });
+        }
 
         $.ajax({
-            url: "admin/import?city="+encodeURI(city)+"&label="+label+"&ne_lat="+NElat+"&ne_lng="+NElng+"&sw_lat="+SWlat+"&sw_lng="+SWlng+"&level="+level,
-            type: "GET",
-            dataType: 'json',
+            url: "admin/import",
+            type: "POST",
+            data: data,
+            cache: false,
+            processData: false, // Don't process the files
+            contentType: false,
             success: function (response) {
                 console.log(response);
                 if(response.success === true){
@@ -133,4 +154,19 @@ jQuery(document).ready(function($){
         }
     }
 
+    $("#source").change(function () {
+        if(($(this).val() === "foursquare") || ($(this).val() === "google")){
+            $(".csv-container").hide();
+            $(".autocomplete-container").show();
+        } else {
+            $(".csv-container").show();
+            $(".autocomplete-container").hide();
+        }
+    });
+
+
+    $("#csv_input").on('change', function(){
+        csvFile = event.target.files;
+        console.log(csvFile);
+    });
 });
