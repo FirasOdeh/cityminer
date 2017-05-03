@@ -19,23 +19,34 @@
                     <div id="Export" class="col s12">
                         <h5><strong>Add city</strong></h5>
                         <div>
-                            <div class="input-field col s3">
-                                <select>
+                            <div class="input-field col s3" style="z-index: 1002;">
+                                <select id="source">
                                     <option value="foursquare" selected>Foursquare</option>
                                     <option value="google">Google</option>
+                                    <option value="csv">CSV</option>
                                 </select>
                                 <label>Source</label>
                             </div>
 
                             <div class="col s5">
                                 <div class="row">
-                                    <div class="input-field col s12">
+                                    <div class="input-field col s12 autocomplete-container" >
                                         <i class="material-icons prefix">location_on</i>
                                         <input type="text" id="autocomplete-input" class="autocomplete">
                                         <label for="autocomplete-input">Address</label>
                                     </div>
+                                    <div class="file-field input-field csv-container" style="display: none">
+                                        <div class="btn blue lighten-1">
+                                            <span>File</span>
+                                            <input id="csv_input" type="file" multiple>
+                                        </div>
+                                        <div class="file-path-wrapper">
+                                            <input class="file-path validate" type="text" placeholder="Upload one or more files">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
 
                             <div class="input-field col s2">
                                 <button type="submit" id="import_btn" class="waves-effect waves-light btn"> Import </button>
