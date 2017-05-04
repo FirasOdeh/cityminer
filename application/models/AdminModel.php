@@ -36,6 +36,18 @@ class AdminModel extends CI_Model {
         return $response->response->venues;
     }
 
+
+    public function importCityPlacesGoogle($lat, $lng, $radius)
+    {
+        $key = "key=AIzaSyBE6ia5uKlMLjvUfh7hZwtAODnw_wreQ_M";
+        $url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat,$lng&radius=$radius&$key";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $response = json_decode(curl_exec($ch));
+        return $response->results;
+    }
+
     public function saveCSV($places, $label){
         $fp = fopen('data/algorithms/graphMaker/' . $label . '.csv', 'w');
         fputs($fp, "placeId,latitude,longitude,category\n");

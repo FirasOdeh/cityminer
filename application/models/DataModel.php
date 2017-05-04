@@ -52,18 +52,6 @@ class DataModel extends CI_Model {
     }
 
 
-    public function importCityPlacesGoogle($city, $country)
-    {
-        $key = "key=AIzaSyBE6ia5uKlMLjvUfh7hZwtAODnw_wreQ_M";
-
-        $url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=45.750000,4.850000&radius=50000&$key";
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $response = json_decode(curl_exec($ch));
-        return count($response->results);
-    }
-
     public function camputeStatistics($city, $zone)
     {
         $graph = file_get_contents('./data/cities/'.$city.'/'.'FoursquareGraph.json');

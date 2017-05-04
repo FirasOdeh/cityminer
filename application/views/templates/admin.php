@@ -61,7 +61,7 @@
 <!--<script type="text/javascript" src="--><?php //echo base_url(); ?><!--js/material.min.js"></script>-->
 <script type="text/javascript" src="<?php echo base_url(); ?>js/materialize.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>js/custom.js"></script>
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBE6ia5uKlMLjvUfh7hZwtAODnw_wreQ_M"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyD9oiwLJ2IVye5GC2wNbrjVW7eAOWuZx4M"></script>
 <?php echo $body; ?>
 
 <script src="js/leaflet.js"></script>
