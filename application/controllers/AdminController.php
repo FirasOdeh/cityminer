@@ -46,7 +46,6 @@ Class AdminController extends CI_Controller {
             $this->places = $this->AdminModel->foursquareCategoriesProjection($this->places, $level);
             $this->AdminModel->saveCSV($this->places, $label);
         } else if( $source == "google"){
-
         } else if($source == "csv"){
             if(move_uploaded_file($_FILES[0]['tmp_name'], 'data/algorithms/graphMaker/' . $label . '.csv'))
             {
@@ -56,7 +55,6 @@ Class AdminController extends CI_Controller {
             {
                 $response["success"] = false;
             }
-
         }
         $this->AdminModel->buildGraph($label);
         $this->AdminModel->addCity($city, $label, count($this->places));
