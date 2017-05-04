@@ -1,5 +1,6 @@
 //var mymap = L.map('mainmap').setView([45.754, 4.842], 13);
 var mymap = L.map('mainmap').setView([43.296353, 5.370505], 13);
+
 //var mymap = L.map('mainmap').setView([51.505, -0.09], 13);
 
 attribution = mymap.attributionControl;
@@ -9,6 +10,8 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
     id: 'mapbox.streets'
 }).addTo(mymap);
 attribution.setPrefix('CityMiner Project © 2017');
+
+
 
 var popup = L.popup();
 
@@ -30,8 +33,14 @@ jQuery(document).ready(function($){
     $('.modal').modal();
 
 
-
-
+    $('#toggle_options').click(function(){
+        $('.left_option_panel').toggleClass('left_closed');
+        $('.option_panel').toggleClass('closed_option_panel');
+        if($('.option_panel').hasClass('closed_option_panel')){
+            $('.left_option_panel').addClass('left_closed');
+        }
+    });
+    $('#modal1').modal('open');
 
     var win_h = $(window).height();
     var nav_h = $('#site_nav').height();
@@ -71,7 +80,39 @@ jQuery(document).ready(function($){
     //     }
     // });
 
+    var map2 = L.map('map2').setView([45.754, 4.842], 13);
+    $('#s_city').change(function(){
 
+        map2.invalidateSize();
+        attribution = map2.attributionControl;
+        attribution.setPrefix('CityMiner Project © 2017');
+        clearMap2();
+
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+            maxZoom: 18,
+            id: 'mapbox.streets'
+        }).addTo(map2);
+
+        $.ajax({
+            url: "controller/execute",
+            data: {
+                "city": $('#s_city').val(),
+                "algo": $('#algo').val(),
+                "sigma": $('#sigma').val(),
+                "delta": $('#delta').val(),
+                "time": $('#time').val(),
+                "mincov": $('#mincov').val(),
+            },
+            cache: false,
+            type: "GET",
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (xhr) {
+                console.log("erre");
+            }
+        });
+    });
     $('#city').change(function(){
         if($('#city').val()) {
             clearMap();
@@ -79,12 +120,14 @@ jQuery(document).ready(function($){
                 maxZoom: 18,
                 id: 'mapbox.streets'
             }).addTo(mymap);
+            $('.left_option_panel').addClass('left_closed');
+            $('.option_panel').addClass('closed_option_panel');
             $.ajax({
                 url: "controller/areas",
                 data: {
                     "city": $('#city').val(),
                     "algo": $('#algo').val(),
-                    "segma": $('#segma').val(),
+                    "sigma": $('#sigma').val(),
                     "delta": $('#delta').val(),
                     "time": $('#time').val(),
                     "mincov": $('#mincov').val(),
@@ -141,7 +184,8 @@ $('button#submitButton').click( function() {
             maxZoom: 18,
             id: 'mapbox.streets'
         }).addTo(mymap);
-        $('.option_panel').css('right','-365px');
+        //$('.option_panel').css('right','-365px');
+        $('.option_panel').addClass('closed_option_panel');
 
         var att_arr = {};
         $.ajax({
@@ -224,7 +268,7 @@ $('button#submitButton').click( function() {
                     return parseFloat(b.val) - parseFloat(a.val);
                 });
 
-
+                $('.toggle_div').removeClass('toggle_div_closed');
                 // Create Attributes sidebar list
                 $('#and_Attributes_form, #or_Attributes_form').html('');
                 $.each(res, function (key, value) {
@@ -238,7 +282,8 @@ $('button#submitButton').click( function() {
                         '</p>');
                 });
                 $('#map_loading').hide();
-                $('.option_panel').css('right','13px');
+                //$('.option_panel').css('right','13px');
+                $('.option_panel').removeClass('closed_option_panel');
 
 
                 $('#and_Attributes_form input').change(function() {
@@ -246,25 +291,41 @@ $('button#submitButton').click( function() {
                     $.each($('#and_Attributes_form').serializeArray(), function (i, field) {
                         pAttributes.push(field.name);
                     });
-                    $('.left_option_panel').css('left','13px');
+                    //$('.left_option_panel').css('left','13px');
+                    $('.left_option_panel').removeClass('left_closed');
+                    $('.toggle_div').removeClass('toggle_div_closed');
+
                     setTimeout(function() {
                         clearMap();
                         var rand_color = getRandomColor();
+                        var sorted_patterns = result_patterns.sort(function(a, b) {
+                            return parseFloat(b.characteristic.score) - parseFloat(a.characteristic.score);
+                        });
                         if(pAttributes.length>0){
-                            var sorted_patterns = result_patterns.sort(function(a, b) {
-                                return parseFloat(b.characteristic.score) - parseFloat(a.characteristic.score);
-                            });
-                            $('#zones_form').html('');
+
+                            $('#zones_table_body').html('');
                             var num = 0;
                             var zones_group = [];
                             //console.log(sorted_patterns);
                             $.each(sorted_patterns, function (key, value) {
                                 //if(!eq_arrays(pAttributes,value.characteristic.positiveAttributes)){return true;}
                                 if(!pAttributes.containsAll(value.characteristic.positiveAttributes)){return true;}
-                                $('#zones_form').append('<p class="checkbox tooltipped"  data-position="bottom" data-tooltip="'+value.characteristic.score+'">'+
-                                    '<input type="checkbox" name="'+value.subgraph+'" id="zone_'+value.subgraph+'" />'+
-                                    '<label for="zone_'+value.subgraph+'">'+value.characteristic.positiveAttributes+'</label>'+
-                                    '</p>');
+                                // $('#zones_form').append('<p class="checkbox tooltipped"  data-position="bottom" data-tooltip="'+value.characteristic.score+'">'+
+                                //     '<div>'+
+                                //     '<input type="checkbox" name="'+value.subgraph+'" id="zone_'+value.subgraph+'" />'+
+                                //     '<label for="zone_'+value.subgraph+'">asd'+value.characteristic.positiveAttributes+'</label>'+
+                                //     '</div>'+
+                                //     '<div>'+
+                                //     '<input type="checkbox" name="'+value.subgraph+'" id="zone_'+value.subgraph+'" />'+
+                                //     '<label for="zone_'+value.subgraph+'">'+value.characteristic.positiveAttributes+'</label>'+
+                                //     '</div>'+
+                                //     '</p>');
+                                $('#zones_table_body').append('<tr class="tooltipped" data-position="right" data-tooltip="Score = '+value.characteristic.score+'">'+
+                                    '<p class="checkbox">'+
+                                    '<td><input type="checkbox" name="'+value.subgraph+'" id="zone_'+value.subgraph+'" /><label class="input_check" for="zone_'+value.subgraph+'"></label></td>'+
+                                    '<td><label for="zone_'+value.subgraph+'">'+value.characteristic.positiveAttributes+'</label></td>'+
+                                    '<td><label for="zone_'+value.subgraph+'">'+value.characteristic.positiveAttributes+'</label></td></p></tr>');
+                                document.getElementById("check_all").checked = false;
                                 if(num==0) {
                                     zones_group = zones_group.concat(value.subgraph);
                                 }
@@ -357,11 +418,26 @@ $('button#submitButton').click( function() {
                             });
                         }
                         $('.tooltipped').tooltip({delay: 100});
+                        $('#check_all').change(function() {
+                            var x = document.getElementById("check_all").checked;
+                            if(x){
+                                $('#zones_form input').each(function() {
+                                    this.checked = true;
+                                });
+                            }else{
+                                $('#zones_form input').each(function() {
+                                    this.checked = false;
+                                });
+                            }
+                        });
                         $('#zones_form input').change(function() {
                             var pAttributes2 = [];
                             $.each($('#zones_form ').serializeArray(), function (i, field) {
-                                pAttributes2.push(field.name);
+                                if(field.name!='check_all'){
+                                    pAttributes2.push(field.name);
+                                }
                             });
+                            console.log(pAttributes2);
                             clearMap();
                             var rand_color = getRandomColor();
                             var zone = new L.LayerGroup();
@@ -468,23 +544,30 @@ $('button#submitButton').click( function() {
                     $.each($('#or_Attributes_form').serializeArray(), function (i, field) {
                         pAttributes.push(field.name);
                     });
-                    $('.left_option_panel').css('left','13px');
+                    //$('.left_option_panel').css('left','13px');
+                    $('.left_option_panel').removeClass('left_closed');
                     setTimeout(function() {
                         clearMap();
                         var rand_color = getRandomColor();
                         var sorted_patterns = result_patterns.sort(function(a, b) {
                             return parseFloat(b.characteristic.score) - parseFloat(a.characteristic.score);
                         });
-                        $('#zones_form').html('');
+                        $('#zones_table_body').html('');
                         var num = 0;
                         var zones_group = [];
                         $.each(sorted_patterns , function (key, value) {
 
                             if(!value.characteristic.positiveAttributes.containsAny(pAttributes)){return true;}
-                            $('#zones_form').append('<p class="checkbox tooltipped"  data-position="bottom" data-tooltip="'+value.characteristic.score+'">'+
-                                '<input type="checkbox" name="'+value.subgraph+'" id="zone_'+value.subgraph+'" />'+
-                                '<label for="zone_'+value.subgraph+'">'+value.characteristic.positiveAttributes+'</label>'+
-                                '</p>');
+                            // $('#zones_form').append('<p class="checkbox tooltipped"  data-position="bottom" data-tooltip="'+value.characteristic.score+'">'+
+                            //     '<input type="checkbox" name="'+value.subgraph+'" id="zone_'+value.subgraph+'" />'+
+                            //     '<label for="zone_'+value.subgraph+'">'+value.characteristic.positiveAttributes+'</label>'+
+                            //     '</p>');
+                            $('#zones_table_body').append('<tr class="tooltipped" data-position="right" data-tooltip="Score = '+value.characteristic.score+'">'+
+                                '<p class="checkbox">'+
+                                '<td><input type="checkbox" name="'+value.subgraph+'" id="zone_'+value.subgraph+'" /><label class="input_check" for="zone_'+value.subgraph+'"></label></td>'+
+                                '<td><label for="zone_'+value.subgraph+'">'+value.characteristic.positiveAttributes+'</label></td>'+
+                                '<td><label for="zone_'+value.subgraph+'">'+value.characteristic.positiveAttributes+'</label></td></p></tr>');
+                            document.getElementById("check_all").checked = false;
                             if(num==0) {
                                 zones_group = zones_group.concat(value.subgraph);
                             }
@@ -576,10 +659,24 @@ $('button#submitButton').click( function() {
                             }
                         });
                         $('.tooltipped').tooltip({delay: 100});
+                        $('#check_all').change(function() {
+                            var x = document.getElementById("check_all").checked;
+                            if(x){
+                                $('#zones_form input').each(function() {
+                                    this.checked = true;
+                                });
+                            }else{
+                                $('#zones_form input').each(function() {
+                                    this.checked = false;
+                                });
+                            }
+                        });
                         $('#zones_form input').change(function() {
                             var pAttributes2 = [];
                             $.each($('#zones_form ').serializeArray(), function (i, field) {
-                                pAttributes2.push(field.name);
+                                if(field.name!='check_all'){
+                                    pAttributes2.push(field.name);
+                                }
                             });
                             clearMap();
                             var rand_color = getRandomColor();
@@ -750,6 +847,19 @@ function clearMap() {
             }
             catch(e) {
                 console.log("problem with " + e + mymap._layers[i]);
+            }
+        }
+    }
+}
+
+function clearMap2(){
+    for(i in map2._layers) {
+        if(map2._layers[i]._path != undefined) {
+            try {
+                map2.removeLayer(map2._layers[i]);
+            }
+            catch(e) {
+                console.log("problem with " + e + map2._layers[i]);
             }
         }
     }

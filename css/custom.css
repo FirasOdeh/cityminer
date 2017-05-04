@@ -156,13 +156,13 @@ a.page-logo { font-weight: 100 !important; }
 .dashboard_options .row {  margin-bottom:0px;vertical-align: middle }
 
 .option_hide { display: none; }
-.modal { min-height: 80%; }
+.modal { min-height: 80%;z-index: 9999999; }
 .option_panel {
 	position: fixed;
 	z-index: 999;
 	display: inline-block;
 	width: 340px;
-	right: -365px;
+	right: 13px;
 	top: 200px;
 
 	-webkit-transition:all .4s ease;
@@ -170,25 +170,45 @@ a.page-logo { font-weight: 100 !important; }
 	-ms-transition:all .4s ease;
 	-o-transition:all .4s ease;
 }
+.closed_option_panel{
+	right: -365px;
+}
 .option_panel .card-content {
 	max-height: 400px;
 	overflow: auto;
 }
 .loading_div {display: inline-block;margin-top: 15px;display: none }
-.map_modal { padding: 0px !important;margin: 0px !important;}
+.map_modal { padding: 0px !important;margin: 0px !important;z-index: 999999;}
 
 .left_option_panel {
 	position: fixed;
 	z-index: 999;
 	display: inline-block;
 	width: 340px;
-	left: -365px;
+	left: 13px;
 	top: 235px;
 	-webkit-transition:all .4s ease;
 	-moz-transition:all .4s ease;
 	-ms-transition:all .4s ease;
 	-o-transition:all .4s ease;
 }
+
+.left_closed{
+	left: -365px;
+}
+.toggle_div {
+	-webkit-transition:all .4s ease;
+	-moz-transition:all .4s ease;
+	-ms-transition:all .4s ease;
+	-o-transition:all .4s ease;
+}
+.toggle_div_closed {
+	right:-150px;
+}
+
+#zones_form #zones_table, #zones_table_body { width: 138px !important;word-wrap: break-word;}
+#zones_form #zones_table, #zones_table_body td { max-width: 138px !important;word-wrap: break-word;}
+
 .left_option_panel .card-content {
 	max-height: 350px;
 	overflow: auto;
@@ -197,4 +217,10 @@ a.page-logo { font-weight: 100 !important; }
 .left_option_panel .card-title {
 	padding: 2px 15px;
 }
-#city {z-index: 99999;}
+#city, #s_city{z-index: 99999;}
+.select-dropdown {z-index: 1000;}
+#modal1 .select-dropdown {z-index: 999999;}
+.card .left-card-content { padding: 0px !important; }
+.card .left-card-content .input_check { position: relative;display: inline-block;top:5px;left: 8px;}
+.cityminer-blue { background: #f3f9ff; }
+.modal_map_div { position: relative; display: inline-block;width:100%;height:330px; }
