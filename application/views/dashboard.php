@@ -232,7 +232,7 @@
                         </div>
                         <div class="input-field col s12 m6">
                             <p class="range-field">
-                                <input type="range" id="test5" min="0" max="100" />
+                                <input type="range" id="similarity_value" min="0" max="100" />
                             </p>
                         </div>
                         <div class="modal_map_div">

@@ -1,5 +1,5 @@
-//var mymap = L.map('mainmap').setView([45.754, 4.842], 13);
-var mymap = L.map('mainmap').setView([43.296353, 5.370505], 13);
+var mymap = L.map('mainmap').setView([45.754, 4.842], 13);
+//var mymap = L.map('mainmap').setView([43.296353, 5.370505], 13);
 
 //var mymap = L.map('mainmap').setView([51.505, -0.09], 13);
 
@@ -26,6 +26,7 @@ function onMapClick(e) {
 
 // Global variable for city areas data
 var city_data = {};
+var city_data2 = {};
 
 //mymap.on('click', onMapClick);
 
@@ -40,7 +41,7 @@ jQuery(document).ready(function($){
             $('.left_option_panel').addClass('left_closed');
         }
     });
-    $('#modal1').modal('open');
+
 
     var win_h = $(window).height();
     var nav_h = $('#site_nav').height();
@@ -49,50 +50,79 @@ jQuery(document).ready(function($){
     $('#mainmap').css('height', map_h);
 
 
-    // $.ajax({
-    //     type: "POST",
-    //     //url: "http://localhost/cityminer/data/algorithms/graphMaker/marseille.csv",
-    //     url: "http://localhost/cityminer/data/algorithms/graphMaker/nice.csv",
-    //     dataType: "text",
-    //     success: function(data) {
-    //         console.log("OK");
-    //         var lines = processData(data);
-    //         var num = 0;
-    //         $.each(lines, function (key, value) {
-    //             num++;
-    //             //console.log(value);
-    //             //L.marker([value[1], value[2]]).addTo(mymap);
-    //             var res1 = value[1].split(":");
-    //             var res2 = value[2].split(":");
-    //             //console.log(res1);
-    //             //console.log(res2);
-    //             // L.marker([res1[0], res2[0]]).addTo(mymap);
-    //              L.marker([res1[1], res2[1]]).addTo(mymap);
-    //             // L.polygon([
-    //             //     [res1[0], res2[0]],
-    //             //     [res1[0], res2[1]],
-    //             // ]).addTo(mymap);
-    //         });
-    //         console.log("num = "+ num);
-    //     },
-    //     error: function (xhr) {
-    //         console.log("error");
-    //     }
-    // });
-
     var map2 = L.map('map2').setView([45.754, 4.842], 13);
+    var origin_city = null;
+    window.destination_city = null;
+    $('#similarity_value').change(function(){
+        var similarity_value = $(this).val();
+        clearMap2(map2);
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+            maxZoom: 18,
+            id: 'mapbox.streets'
+        }).addTo(map2);
+        if(origin_city){
+            $.each(origin_city.patterns, function (k, z) {
+                if(similarity_check(destination_city.characteristic.positiveAttributes, z.characteristic.positiveAttributes, similarity_value)){
+                    var zone = new L.LayerGroup();
+                    var zone_color = "#34bf49";
+                    L.geoJson(z['zone'], {
+                        color: zone_color,
+                        fillColor: zone_color,
+                        weight: 1,
+                        fillOpacity: 0.3
+                    }).addTo(map2);
+                }
+            });
+        }else{
+            Materialize.toast('Please select a City!', 4000);
+        }
+    });
     $('#s_city').change(function(){
 
         map2.invalidateSize();
         attribution = map2.attributionControl;
         attribution.setPrefix('CityMiner Project © 2017');
-        clearMap2();
+        clearMap2(map2);
 
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
             maxZoom: 18,
             id: 'mapbox.streets'
         }).addTo(map2);
+        var similarity_value = $('#similarity_value').val();
+        $.ajax({
+            url: "controller/areas",
+            data: {
+                "city": $('#s_city').val(),
+                "algo": $('#algo').val(),
+                "sigma": $('#sigma').val(),
+                "delta": $('#delta').val(),
+                "time": $('#time').val(),
+                "mincov": $('#mincov').val(),
+            },
+            cache: false,
+            type: "GET",
+            success: function (response) {
+                city_data2 = {};
+                var g_lat = 0;
+                var g_lng = 0;
+                var num = 0;
+                $.each(response, function (key, value) {
+                    city_data2[value.id] = value.geo;
+                    $.each(value.geo, function (key1, point) {
+                        var p = [];
+                        g_lat += point.lat;
+                        g_lng += point.lng;
+                        num++;
+                    });
+                });
+                g_lat = g_lat / num;
+                g_lng = g_lng / num;
+                map2.setView([g_lat, g_lng], 11.5);
+            },
+            error: function (xhr) {
 
+            }
+        });
         $.ajax({
             url: "controller/execute",
             data: {
@@ -106,7 +136,26 @@ jQuery(document).ready(function($){
             cache: false,
             type: "GET",
             success: function (response) {
-                console.log(response);
+                var result_patterns = response.patterns;
+                $.each(result_patterns, function (key, value) {
+                    var poly;
+                    var zone = new L.LayerGroup();
+                    $.each(value.subgraph, function (k, area) {
+
+                        var points = [];
+                        $.each(city_data2[area], function (key1, point) {
+                            var p = [];
+                            p.push(point.lat);
+                            p.push(point.lng);
+                            points.push(p);
+                        });
+                        poly = L.polygon(points).addTo(zone);
+                    });
+                    value['zone'] = unify(zone.getLayers());
+
+                });
+                origin_city = response;
+                $('#similarity_value').change();
             },
             error: function (xhr) {
                 console.log("erre");
@@ -135,6 +184,7 @@ jQuery(document).ready(function($){
                 cache: false,
                 type: "GET",
                 success: function (response) {
+                    city_data = {};
                     var g_lat = 0;
                     var g_lng = 0;
                     var num = 0;
@@ -160,6 +210,7 @@ jQuery(document).ready(function($){
                     g_lat = g_lat / num;
                     g_lng = g_lng / num;
                     mymap.setView([g_lat, g_lng], 11.5);
+                    $('.toggle_div').addClass('toggle_div_closed');
                 },
                 error: function (xhr) {
 
@@ -201,16 +252,10 @@ $('button#submitButton').click( function() {
             cache: false,
             type: "GET",
             success: function (response) {
-                // var sorted_patterns = response.patterns.sort(function(a, b) {
-                //     return parseFloat(b.characteristic.score) - parseFloat(a.characteristic.score);
-                // });
                 var result_patterns = response.patterns;
-                var global_zone = new L.LayerGroup();
                 $.each(result_patterns, function (key, value) {
-                    //var rand_color = getRandomColor();
                     var poly;
                     var zone = new L.LayerGroup();
-                    //var temp_zone = new L.LayerGroup();
                     $.each(value.subgraph, function (k, area) {
                         var points = [];
                         $.each(city_data[area], function (key1, point) {
@@ -230,33 +275,8 @@ $('button#submitButton').click( function() {
                             att_arr[att] = 1;
                         }
                     });
-                    // if(key==0){
-                    //     global_zone = temp_zone;
-                    // }
-                    // var intersection = turf.intersect(unify(global_zone.getLayers()), unify(zone.getLayers()));
-                    // //console.log(intersection);
-                    //
-                    // if(intersection==undefined) {
-                    //     console.log(intersection);
-                    //     global_zone = L.geoJson(turf.union(global_zone.getLayers(), temp_zone.getLayers()));
-                    //
-                    //
-                    //     //L.geoJson(unify(global_zone.getLayers())).addTo(mymap);
-                    // }
-
-
                     value['zone'] = unify(zone.getLayers());
-                    // var zoneUnion = L.geoJson(unify(zone.getLayers()), {
-                    //     color: rand_color,
-                    //     fillColor: rand_color,
-                    //     weight: 1,
-                    //     fillOpacity: 0.5
-                    // }).on('click', function (e) {
-                    //     popup
-                    //         .setLatLng(e.latlng)
-                    //         .setContent("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes)
-                    //         .openOn(mymap);
-                    // }).addTo(mymap);
+
                 });
 
                 // Sort the attributes by occurrence
@@ -324,7 +344,7 @@ $('button#submitButton').click( function() {
                                     '<p class="checkbox">'+
                                     '<td><input type="checkbox" name="'+value.subgraph+'" id="zone_'+value.subgraph+'" /><label class="input_check" for="zone_'+value.subgraph+'"></label></td>'+
                                     '<td><label for="zone_'+value.subgraph+'">'+value.characteristic.positiveAttributes+'</label></td>'+
-                                    '<td><label for="zone_'+value.subgraph+'">'+value.characteristic.positiveAttributes+'</label></td></p></tr>');
+                                    '<td><label for="zone_'+value.subgraph+'">'+value.characteristic.negativeAttributes+'</label></td></p></tr>');
                                 document.getElementById("check_all").checked = false;
                                 if(num==0) {
                                     zones_group = zones_group.concat(value.subgraph);
@@ -341,6 +361,9 @@ $('button#submitButton').click( function() {
                                     }).on('click', function (e) {
                                         $('#stats_content').html("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes);
                                         $('#modal1').modal('open');
+                                        window.destination_city = value;
+                                        console.log(destination_city);
+                                        console.log("asdasdsadsadsadasd");
                                         $('#modal_tabs').tabs('select_tab', 'stats');
                                         if(window.myBar){
                                             window.myBar = window.myBar.clear();
@@ -453,6 +476,7 @@ $('button#submitButton').click( function() {
                                         }).on('click', function (e) {
                                             $('#stats_content').html("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes);
                                             $('#modal1').modal('open');
+                                            destination_city = value;
                                             $('#modal_tabs').tabs('select_tab', 'stats');
                                             if(window.myBar){
                                                 window.myBar = window.myBar.clear();
@@ -566,7 +590,7 @@ $('button#submitButton').click( function() {
                                 '<p class="checkbox">'+
                                 '<td><input type="checkbox" name="'+value.subgraph+'" id="zone_'+value.subgraph+'" /><label class="input_check" for="zone_'+value.subgraph+'"></label></td>'+
                                 '<td><label for="zone_'+value.subgraph+'">'+value.characteristic.positiveAttributes+'</label></td>'+
-                                '<td><label for="zone_'+value.subgraph+'">'+value.characteristic.positiveAttributes+'</label></td></p></tr>');
+                                '<td><label for="zone_'+value.subgraph+'">'+value.characteristic.negativeAttributes+'</label></td></p></tr>');
                             document.getElementById("check_all").checked = false;
                             if(num==0) {
                                 zones_group = zones_group.concat(value.subgraph);
@@ -583,6 +607,7 @@ $('button#submitButton').click( function() {
                                 }).on('click', function (e) {
                                     $('#stats_content').html("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes);
                                     $('#modal1').modal('open');
+                                    destination_city = value;
                                     $('#modal_tabs').tabs('select_tab', 'stats');
                                     if(window.myBar){
                                         window.myBar = window.myBar.clear();
@@ -696,8 +721,10 @@ $('button#submitButton').click( function() {
                                             weight: 1,
                                             fillOpacity: 0.3
                                         }).on('click', function (e) {
+
                                             $('#stats_content').html("Positive Attributes for this Zone: " + value.characteristic.positiveAttributes);
                                             $('#modal1').modal('open');
+                                            destination_city = value;
                                             $('#modal_tabs').tabs('select_tab', 'stats');
                                             if(window.myBar){
                                                 window.myBar = window.myBar.clear();
@@ -828,6 +855,26 @@ function cover_check(group, zone) {
     return false;
 }
 
+function similarity_check(zone1, zone2, val) {
+    if(zone1.length==0||zone2.length==0)return false;
+    val = val/100;
+    var size = zone1.length;
+    var intersection = intersect(zone1, zone2);
+    var intersection_size = intersection.length;
+    if((intersection_size /size)>=val){
+        return true;
+    }
+    return false;
+}
+
+function intersect(a, b) {
+    var t;
+    if (b.length > a.length) t = b, b = a, a = t; // indexOf to loop over shorter
+    return a.filter(function (e) {
+        return b.indexOf(e) > -1;
+    });
+}
+
 function get_zone_color(score){
     if(score>=0.015){
         return "#34bf49";
@@ -852,7 +899,7 @@ function clearMap() {
     }
 }
 
-function clearMap2(){
+function clearMap2(map2){
     for(i in map2._layers) {
         if(map2._layers[i]._path != undefined) {
             try {
